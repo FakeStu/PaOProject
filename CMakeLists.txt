@@ -13,7 +13,27 @@ find_package(Qt6 COMPONENTS
   Widgets
   REQUIRED)
 
-add_executable(PaOProject main.cpp)
+add_executable(PaOProject main.cpp
+        Classi/Product.cpp
+        Classi/Product.h
+        Classi/Paper_Product.cpp
+        Classi/Paper_Product.h
+        Classi/Disk.cpp
+        Classi/Disk.h
+        Classi/Periodical.cpp
+        Classi/Periodical.h
+        Classi/Book.cpp
+        Classi/Book.h
+        Classi/Magazine.cpp
+        Classi/Magazine.h
+        Classi/Comic.cpp
+        Classi/Comic.h
+        Classi/CD.cpp
+        Classi/CD.h
+        Classi/Vinyl.cpp
+        Classi/Vinyl.h
+        Classi/Movie.cpp
+        Classi/Movie.h)
 target_link_libraries(PaOProject
   Qt::Core
   Qt::Gui
