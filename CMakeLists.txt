@@ -33,7 +33,12 @@ add_executable(PaOProject main.cpp
         Classi/Vinyl.cpp
         Classi/Vinyl.h
         Classi/Movie.cpp
-        Classi/Movie.h)
+        Classi/Movie.h
+        GUI/mainwindow.h
+        GUI/mainwindow.cpp
+        GUI/BookPage.h
+        GUI/BookPage.cpp
+)
 target_link_libraries(PaOProject
   Qt::Core
   Qt::Gui

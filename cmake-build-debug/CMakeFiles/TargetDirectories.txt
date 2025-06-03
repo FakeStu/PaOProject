@@ -1,0 +1,5 @@
+C:/Users/Mattia/CLionProjects/PaOProject/cmake-build-debug/CMakeFiles/PaOProject.dir
+C:/Users/Mattia/CLionProjects/PaOProject/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Mattia/CLionProjects/PaOProject/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/Mattia/CLionProjects/PaOProject/cmake-build-debug/CMakeFiles/PaOProject_autogen_timestamp_deps.dir
+C:/Users/Mattia/CLionProjects/PaOProject/cmake-build-debug/CMakeFiles/PaOProject_autogen.dir
