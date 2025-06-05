@@ -24,6 +24,7 @@ private slots:
   void onBookSaved(const Book &book);
   void onCDSaved(const CD &cd);
   void onViewClicked();
+  void onSaveJsonClicked();
 
 private:
   QStackedWidget *stackedWidget;
@@ -42,6 +43,7 @@ private:
   QPushButton *viewButton;
   QWidget *viewPage;
   QTableWidget *tableWidget;
+  QPushButton *saveJsonButton;
 };
 
 #endif // MAINWINDOW_H
