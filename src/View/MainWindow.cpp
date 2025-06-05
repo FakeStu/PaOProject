@@ -102,64 +102,6 @@ void MainWindow::onCDSaved(const CD &cd) {
   QMessageBox::information(this, "Successo", "CD aggiunto con successo!");
 }
 
-/*void MainWindow::onViewClicked() {
-  if (typeComboBox->currentText() == "Book") {
-    tableWidget->setColumnCount(5); // puoi aumentare se vuoi più dati
-    tableWidget->setHorizontalHeaderLabels({
-                                             "Nome", "Autore", "Prezzo", "Copie",
-                                             "Lingua"
-                                           });
-    tableWidget->horizontalHeader()->setStretchLastSection(true);
-    tableWidget->setRowCount(books.size());
-    for (int i = 0; i < books.size(); ++i) {
-      const Book &b = books[i];
-      tableWidget->setItem(
-                           i, 0, new QTableWidgetItem(
-                            QString::fromStdString(b.getName())));
-      tableWidget->setItem(
-                           i, 1, new QTableWidgetItem(
-                            QString::fromStdString(b.getAuthor())));
-      tableWidget->setItem(
-                           i, 2, new
-                           QTableWidgetItem(QString::number(b.getPrice())));
-      tableWidget->setItem(
-                           i, 3, new QTableWidgetItem(
-                            QString::number(b.getTotalCopies())));
-      tableWidget->setItem(
-                           i, 4, new QTableWidgetItem(
-                            QString::fromStdString(b.getLanguage())));
-    }
-    stackedWidget->setCurrentWidget(viewPage);
-  }
-  if (typeComboBox->currentText() == "CD") {
-    tableWidget->setColumnCount(5); // puoi aumentare se vuoi più dati
-    tableWidget->setHorizontalHeaderLabels({
-                                             "Nome", "Artista", "Prezzo", "Copie",
-                                             "Tipo"
-                                           });
-    tableWidget->horizontalHeader()->setStretchLastSection(true);
-    tableWidget->setRowCount(cds.size());
-    for (int i = 0; i < cds.size(); ++i) {
-      const CD &c = cds[i];
-      tableWidget->setItem(
-                           i, 0, new QTableWidgetItem(
-                            QString::fromStdString(c.getName())));
-      tableWidget->setItem(
-                           i, 1, new QTableWidgetItem(
-                            QString::fromStdString(c.getArtist())));
-      tableWidget->setItem(
-                           i, 2, new QTableWidgetItem(
-                            QString::number(c.getPrice())));
-      tableWidget->setItem(
-                           i, 3, new QTableWidgetItem(
-                            QString::number(c.getTotalCopies())));
-      tableWidget->setItem(
-                           i, 4, new QTableWidgetItem(
-                            QString::fromStdString(c.getBookTypeAsString())));
-    }
-    stackedWidget->setCurrentWidget(viewPage);
-  }
-}*/
 void MainWindow::onViewClicked() {
   QString selectedType = typeComboBox->currentText();
   tableWidget->clearContents();
@@ -209,4 +151,3 @@ void MainWindow::onViewClicked() {
   tableWidget->horizontalHeader()->setStretchLastSection(true);
   stackedWidget->setCurrentWidget(viewPage);
 }
-

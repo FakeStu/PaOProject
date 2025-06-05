@@ -30,12 +30,18 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2a98bef-6913-48f5-bb22-1df5722f2e8c" name="Changes" comment="Aggiunta mainwindow iniziale di prova con aggiunta e visualizzazione Book, modificato Product.cpp">
-      <change afterPath="$PROJECT_DIR$/src/View/CDPage.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/View/CDPage.h" afterDir="false" />
+    <list default="true" id="d2a98bef-6913-48f5-bb22-1df5722f2e8c" name="Changes" comment="Aggiunto conversione a JSON con scrittura su .json">
+      <change afterPath="$PROJECT_DIR$/src/View/RegisterProduct.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/View/RegisterProduct.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Model/Book.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Book.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Model/CD.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/CD.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Model/Comic.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Comic.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Model/Movie.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Movie.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Model/Product.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Product.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Model/Vinyl.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Vinyl.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/View/mainwindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/mainwindow.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/View/mainwindow.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/mainwindow.h" afterDir="false" />
     </list>
@@ -100,7 +106,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.C/C++&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -110,11 +116,6 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="PaOProject" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="PaOProject" TARGET_NAME="PaOProject" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="PaOProject" RUN_TARGET_NAME="PaOProject">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -130,7 +131,17 @@
       <updated>1748972255429</updated>
       <workItem from="1748972257231" duration="14660000" />
       <workItem from="1749113494535" duration="8755000" />
+      <workItem from="1749164284989" duration="2000" />
     </task>
+    <task id="LOCAL-00001" summary="Aggiunto conversione a JSON con scrittura su .json">
+      <option name="closed" value="true" />
+      <created>1749137336295</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1749137336295</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -151,6 +162,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Aggiunto conversione a JSON con scrittura su .json" />
+    <option name="LAST_COMMIT_MESSAGE" value="Aggiunto conversione a JSON con scrittura su .json" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
