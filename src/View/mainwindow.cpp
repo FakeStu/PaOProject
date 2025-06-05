@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
   auto *title = new QLabel("Seleziona tipo di prodotto da aggiungere:",
                            this);
   typeComboBox = new QComboBox(this);
-  typeComboBox->addItems({"Book" /*, "CD", ...*/});
+  typeComboBox->addItems({"Book" , "CD"});
 
   addButton = new QPushButton("Aggiungi", this);
   connect(addButton, &QPushButton::clicked, this, &MainWindow::onAddClicked);
@@ -37,16 +37,16 @@ MainWindow::MainWindow(QWidget *parent)
   connect(bookPage, &BookPage::bookSaved, this, &MainWindow::onBookSaved);
   stackedWidget->addWidget(bookPage);
 
+  // --- Pagina CD ---
+  cdPage = new CDPage(this);
+  connect(cdPage, &CDPage::CDSaved, this, &MainWindow::onCDSaved);
+  stackedWidget->addWidget(cdPage);
+
   viewPage = new QWidget(this);
   auto *viewLayout = new QVBoxLayout(viewPage);
 
   tableWidget = new QTableWidget(this);
-  tableWidget->setColumnCount(5); // puoi aumentare se vuoi più dati
-  tableWidget->setHorizontalHeaderLabels({
-                                           "Nome", "Autore", "Prezzo", "Copie",
-                                           "Lingua"
-                                         });
-  tableWidget->horizontalHeader()->setStretchLastSection(true);
+
 
   auto backButton = new QPushButton("Indietro", this);
   connect(backButton, &QPushButton::clicked, [this]() {
@@ -67,6 +67,10 @@ void MainWindow::onAddClicked() {
     bookPage->resetFields(); // pulisce i campi
     stackedWidget->setCurrentWidget(bookPage);
   }
+  if (typeComboBox->currentText() == "CD") {
+    cdPage->resetFields(); // pulisce i campi
+    stackedWidget->setCurrentWidget(cdPage);
+  }
 }
 
 void MainWindow::onBookSaved(const Book &book) {
@@ -83,14 +87,29 @@ void MainWindow::onBookSaved(const Book &book) {
     return;
   }
 
-  books.push_back(book);
+  //books.push_back(book);
+  products.push_back(std::make_unique<Book>(book));
   qDebug() << "Book salvato: " << QString::fromStdString(book.getName());
   stackedWidget->setCurrentWidget(homePage);
   QMessageBox::information(this, "Successo", "Libro aggiunto con successo!");
 }
 
-void MainWindow::onViewClicked() {
+void MainWindow::onCDSaved(const CD &cd) {
+  //cds.push_back(cd);
+  products.push_back(std::make_unique<CD>(cd));
+  qDebug() << "CD salvato: " << QString::fromStdString(cd.getName());
+  stackedWidget->setCurrentWidget(homePage);
+  QMessageBox::information(this, "Successo", "CD aggiunto con successo!");
+}
+
+/*void MainWindow::onViewClicked() {
   if (typeComboBox->currentText() == "Book") {
+    tableWidget->setColumnCount(5); // puoi aumentare se vuoi più dati
+    tableWidget->setHorizontalHeaderLabels({
+                                             "Nome", "Autore", "Prezzo", "Copie",
+                                             "Lingua"
+                                           });
+    tableWidget->horizontalHeader()->setStretchLastSection(true);
     tableWidget->setRowCount(books.size());
     for (int i = 0; i < books.size(); ++i) {
       const Book &b = books[i];
@@ -112,4 +131,82 @@ void MainWindow::onViewClicked() {
     }
     stackedWidget->setCurrentWidget(viewPage);
   }
+  if (typeComboBox->currentText() == "CD") {
+    tableWidget->setColumnCount(5); // puoi aumentare se vuoi più dati
+    tableWidget->setHorizontalHeaderLabels({
+                                             "Nome", "Artista", "Prezzo", "Copie",
+                                             "Tipo"
+                                           });
+    tableWidget->horizontalHeader()->setStretchLastSection(true);
+    tableWidget->setRowCount(cds.size());
+    for (int i = 0; i < cds.size(); ++i) {
+      const CD &c = cds[i];
+      tableWidget->setItem(
+                           i, 0, new QTableWidgetItem(
+                            QString::fromStdString(c.getName())));
+      tableWidget->setItem(
+                           i, 1, new QTableWidgetItem(
+                            QString::fromStdString(c.getArtist())));
+      tableWidget->setItem(
+                           i, 2, new QTableWidgetItem(
+                            QString::number(c.getPrice())));
+      tableWidget->setItem(
+                           i, 3, new QTableWidgetItem(
+                            QString::number(c.getTotalCopies())));
+      tableWidget->setItem(
+                           i, 4, new QTableWidgetItem(
+                            QString::fromStdString(c.getBookTypeAsString())));
+    }
+    stackedWidget->setCurrentWidget(viewPage);
+  }
+}*/
+void MainWindow::onViewClicked() {
+  QString selectedType = typeComboBox->currentText();
+  tableWidget->clearContents();
+
+  if (selectedType == "Book") {
+    tableWidget->setColumnCount(5);
+    tableWidget->setHorizontalHeaderLabels({
+      "Nome", "Autore", "Prezzo", "Copie", "Lingua"
+    });
+
+    int row = 0;
+    for (const auto& p : products) {
+      if (auto b = dynamic_cast<Book*>(p.get())) {
+        tableWidget->insertRow(row);
+        tableWidget->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(b->getName())));
+        tableWidget->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(b->getAuthor())));
+        tableWidget->setItem(row, 2, new QTableWidgetItem(QString::number(b->getPrice())));
+        tableWidget->setItem(row, 3, new QTableWidgetItem(QString::number(b->getTotalCopies())));
+        tableWidget->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(b->getLanguage())));
+        ++row;
+      }
+    }
+    tableWidget->setRowCount(row);
+  }
+
+  else if (selectedType == "CD") {
+    tableWidget->setColumnCount(5);
+    tableWidget->setHorizontalHeaderLabels({
+      "Nome", "Artista", "Prezzo", "Copie", "Tipo"
+    });
+
+    int row = 0;
+    for (const auto& p : products) {
+      if (auto c = dynamic_cast<CD*>(p.get())) {
+        tableWidget->insertRow(row);
+        tableWidget->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(c->getName())));
+        tableWidget->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(c->getArtist())));
+        tableWidget->setItem(row, 2, new QTableWidgetItem(QString::number(c->getPrice())));
+        tableWidget->setItem(row, 3, new QTableWidgetItem(QString::number(c->getTotalCopies())));
+        tableWidget->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(c->getBookTypeAsString())));
+        ++row;
+      }
+    }
+    tableWidget->setRowCount(row);
+  }
+
+  tableWidget->horizontalHeader()->setStretchLastSection(true);
+  stackedWidget->setCurrentWidget(viewPage);
 }
+

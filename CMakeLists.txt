@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
 project(PaOProject)
 
-set(CMAKE_PREFIX_PATH "C:/Qt/6.8.1/mingw_64")
+set(CMAKE_PREFIX_PATH "D:/Qt/6.8.1/mingw_64")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -39,6 +39,8 @@ add_executable(PaOProject src/main.cpp
                src/View/mainwindow.cpp
                src/View/BookPage.h
                src/View/BookPage.cpp
+               src/View/CDPage.h
+               src/View/CDPage.cpp
 )
 target_link_libraries(PaOProject
                       Qt::Core
