@@ -19,11 +19,8 @@ RegisterProduct::RegisterProduct(QWidget *parent) : QWidget(parent) {
   formLayout->addRow("Total Copies:", _copies);
   formLayout->addRow("Picture:", _image);
 
-  auto confirmButton = new QPushButton("Confirm", this);
-  connect(confirmButton,
-          &QPushButton::clicked,
-          this,
-          &RegisterProduct::onConfirmClicked);
+  confirmButton = new QPushButton("Confirm", this);
+  connect(confirmButton, &QPushButton::clicked, this, &RegisterProduct::onConfirmClicked);
 
   const auto mainLayout = new QVBoxLayout;
   mainLayout->addLayout(formLayout);

@@ -43,6 +43,8 @@ add_executable(PaOProject src/main.cpp
                src/View/CDPage.cpp
                src/View/RegisterProduct.cpp
                src/View/RegisterProduct.h
+               src/View/ProductFormPage.h
+               src/View/ProductFormPage.cpp
 )
 target_link_libraries(PaOProject
                       Qt::Core

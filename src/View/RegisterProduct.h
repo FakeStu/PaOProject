@@ -3,10 +3,11 @@
 #include <QDateEdit>
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QPushButton>
 
 #include "..\Model\Product.h"
 
-class RegisterProduct : private QWidget {
+class RegisterProduct : public QWidget {
   Q_OBJECT
 
 private:
@@ -20,6 +21,7 @@ private:
   QMap<QString, QLineEdit*> specificFields;
   QString currentType;
   QFormLayout *formLayout;
+  QPushButton *confirmButton;
 
 public:
   explicit RegisterProduct(QWidget *parent = nullptr);

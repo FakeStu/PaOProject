@@ -31,19 +31,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2a98bef-6913-48f5-bb22-1df5722f2e8c" name="Changes" comment="Aggiunto conversione a JSON con scrittura su .json">
-      <change afterPath="$PROJECT_DIR$/src/View/RegisterProduct.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/View/RegisterProduct.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/View/ProductFormPage.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/View/ProductFormPage.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Book.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Book.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/CD.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/CD.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Comic.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Comic.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Movie.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Movie.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Product.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Product.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Vinyl.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Vinyl.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/View/mainwindow.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/mainwindow.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/View/mainwindow.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/mainwindow.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/View/RegisterProduct.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/RegisterProduct.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/View/RegisterProduct.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/RegisterProduct.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,6 +111,11 @@
     </key>
   </component>
   <component name="RunManager">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="PaOProject" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="PaOProject" TARGET_NAME="PaOProject" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="PaOProject" RUN_TARGET_NAME="PaOProject">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
