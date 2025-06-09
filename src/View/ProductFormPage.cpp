@@ -140,6 +140,21 @@ ProductFormPage::ProductFormPage(QWidget *parent) : QWidget(parent) {
     filmLayout->addRow("Durata (min):", filmDurationEdit);
     filmLayout->addRow("Genere:", filmGenreEdit);
 
+
+    searchLineEdit = new QLineEdit(this);
+    searchLineEdit->setPlaceholderText("Cerca per nome");
+
+    searchButton = new QPushButton(this);
+    searchButton->setIcon(QIcon::fromTheme("edit-find")); // Icona lente di ingrandimento
+    searchButton->setToolTip("Cerca");
+
+    QHBoxLayout* searchLayout = new QHBoxLayout();
+    searchLayout->addWidget(searchLineEdit);
+    searchLayout->addWidget(searchButton);
+    mainLayout->addRow("Cerca:", searchLayout);
+    connect(searchButton, &QPushButton::clicked, this, &ProductFormPage::onSearchClicked);
+
+
     specificStack->addWidget(filmWidget);
 
     mainLayout->addRow(specificStack);
@@ -151,6 +166,10 @@ ProductFormPage::ProductFormPage(QWidget *parent) : QWidget(parent) {
     viewButton = new QPushButton("Visualizza", this);
     mainLayout->addRow(viewButton);
     connect(viewButton, &QPushButton::clicked, this, &ProductFormPage::onViewClicked);
+
+    deleteButton = new QPushButton("Elimina", this);
+    mainLayout->addRow(deleteButton);
+    connect(deleteButton, &QPushButton::clicked, this, &ProductFormPage::onDeleteClicked);
 
     tableWidget = new QTableWidget(this);
     tableWidget->setColumnCount(5);
@@ -515,3 +534,95 @@ void ProductFormPage::onViewClicked() {
         }
     }
 }
+void ProductFormPage::onSearchClicked() {
+    QString searchText = searchLineEdit->text().trimmed();
+    if (searchText.isEmpty()) return;
+
+    tableWidget->clear();
+    tableWidget->setRowCount(0);
+    tableWidget->setColumnCount(4);
+    tableWidget->setHorizontalHeaderLabels({"Tipo", "Nome", "Prezzo", "Copie"});
+
+    int row = 0;
+    for (const auto& product : productList) {
+        QString name = QString::fromStdString(product->getName());
+        if (name.contains(searchText, Qt::CaseInsensitive)) {
+            tableWidget->insertRow(row);
+
+            QString type;
+
+            if (dynamic_cast<Book*>(product.get())) type = "Book";
+            else if (dynamic_cast<CD*>(product.get())) type = "CD";
+            else if (dynamic_cast<Magazine*>(product.get())) type = "Magazine";
+            else if (dynamic_cast<Comic*>(product.get())) type = "Comic";
+            else if (dynamic_cast<Vinyl*>(product.get())) type = "Vinyl";
+            else if (dynamic_cast<Movie*>(product.get())) type = "Film";
+            else type = "Sconosciuto";
+
+            tableWidget->setItem(row, 0, new QTableWidgetItem(type));
+            tableWidget->setItem(row, 1, new QTableWidgetItem(name));
+            tableWidget->setItem(row, 2, new QTableWidgetItem(QString::number(product->getPrice())));
+            tableWidget->setItem(row, 3, new QTableWidgetItem(QString::number(product->getTotalCopies())));
+            ++row;
+        }
+    }
+
+
+    if (row == 0) {
+        QMessageBox::information(this, "Nessun risultato", "Nessun prodotto trovato con questo nome.");
+    }
+}
+
+void ProductFormPage::onDeleteClicked() {
+    int currentRow = tableWidget->currentRow();
+
+    if (currentRow < 0) {
+        QMessageBox::warning(this, "Errore", "Nessun elemento selezionato");
+        return;
+    }
+
+    // Mostra finestra di conferma
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Conferma eliminazione",
+                                  "Sei sicuro di voler eliminare l'elemento selezionato?",
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    if (reply != QMessageBox::Yes) {
+        return; // annullato
+    }
+
+    QString selectedType = typeCombo->currentText();
+    int indexInProductList = -1;
+    int count = 0;
+
+    for (size_t i = 0; i < productList.size(); ++i) {
+        if (selectedType == "Book" && std::dynamic_pointer_cast<Book>(productList[i])) {
+            if (count == currentRow) { indexInProductList = static_cast<int>(i); break; }
+            ++count;
+        } else if (selectedType == "CD" && std::dynamic_pointer_cast<CD>(productList[i])) {
+            if (count == currentRow) { indexInProductList = static_cast<int>(i); break; }
+            ++count;
+        } else if (selectedType == "Magazine" && std::dynamic_pointer_cast<Magazine>(productList[i])) {
+            if (count == currentRow) { indexInProductList = static_cast<int>(i); break; }
+            ++count;
+        } else if (selectedType == "Comic" && std::dynamic_pointer_cast<Comic>(productList[i])) {
+            if (count == currentRow) { indexInProductList = static_cast<int>(i); break; }
+            ++count;
+        } else if (selectedType == "Vinyl" && std::dynamic_pointer_cast<Vinyl>(productList[i])) {
+            if (count == currentRow) { indexInProductList = static_cast<int>(i); break; }
+            ++count;
+        } else if (selectedType == "Film" && std::dynamic_pointer_cast<Movie>(productList[i])) {
+            if (count == currentRow) { indexInProductList = static_cast<int>(i); break; }
+            ++count;
+        }
+    }
+
+    if (indexInProductList >= 0) {
+        productList.erase(productList.begin() + indexInProductList);
+        onViewClicked(); // aggiorna la tabella completamente
+        QMessageBox::information(this, "Successo", "Elemento eliminato con successo");
+    } else {
+        QMessageBox::warning(this, "Errore", "Impossibile eliminare l'elemento selezionato");
+    }
+}
+

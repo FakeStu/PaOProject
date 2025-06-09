@@ -34,6 +34,8 @@ private slots:
   void onTypeChanged(const QString& type);
   void onConfirmClicked();
   void onViewClicked();
+  void onSearchClicked();
+  void onDeleteClicked();
 
 private:
   // Comuni
@@ -103,6 +105,11 @@ private:
   QPushButton* confirmButton;
   QPushButton* viewButton;
   QTableWidget* tableWidget;
+
+  QLineEdit* searchLineEdit;
+  QPushButton* searchButton;
+
+  QPushButton* deleteButton;
 
   std::vector<std::shared_ptr<Product>> productList;
 
