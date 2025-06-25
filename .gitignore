@@ -36,3 +36,6 @@ Makefile
 
 # Ignore executable
 PaOProject.exe
+
+#Ingore CMakeLists.txt for development purposes
+CMakeLists.txt
