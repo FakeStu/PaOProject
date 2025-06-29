@@ -1,8 +1,14 @@
 #include "Product.h"
 
-Product::Product(string name, double price, QDateTime date, int totalCopies,
-                 string image) : name(name), price(price), date(date),
-                                 totalCopies(totalCopies), image(image) {}
+Product::Product(string name,
+                 double price,
+                 QDateTime date,
+                 int totalCopies,
+                 string image) : name(name),
+                                 price(price),
+                                 date(date),
+                                 totalCopies(totalCopies),
+                                 image(image) {}
 
 string Product::getName() const {
   return name;

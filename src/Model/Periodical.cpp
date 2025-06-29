@@ -1,14 +1,31 @@
 #include "Periodical.h"
 
 // Costruttore
-Periodical::Periodical(string name, double price, QDateTime date,
-                       int totalCopies, string image, string author,
-                       string editor, string genre, int pages,
-                       periodicalType periodicity) : Paper_Product(name, price,
-    date, totalCopies, image, author, editor, genre, pages),
-  periodicity(periodicity) {}
+Periodical::Periodical(string name,
+                       double price,
+                       QDateTime date,
+                       int totalCopies,
+                       string image,
+                       string author,
+                       string editor,
+                       string genre,
+                       int pages,
+                       periodicalType periodicity) : PaperProduct(name,
+                                                                  price,
+                                                                  date,
+                                                                  totalCopies,
+                                                                  image,
+                                                                  author,
+                                                                  editor,
+                                                                  genre,
+                                                                  pages),
+                                                     periodicity(periodicity) {}
 
-string Periodical::getPeriodicity() const {
+Periodical::periodicalType Periodical::getPeriodicity() const {
+  return periodicity;
+}
+
+string Periodical::getPeriodicityAsString() const {
   // this is a get AS a String, o questa versione oppure quella usata per enum di CD ----> DA DECIDERE
   switch (periodicity) {
     case daily:
@@ -17,8 +34,8 @@ string Periodical::getPeriodicity() const {
       return "weekly";
     case monthly:
       return "monthly";
-    case annualy:
-      return "annualy";
+    case annually:
+      return "annually";
     default:
       return "unknown";
   }

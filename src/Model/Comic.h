@@ -4,19 +4,29 @@
 #include <string>
 using std::string;
 
+class ProductVisitor; // Forward declaration
+
 class Comic : public Periodical {
 private:
   int volume;
   string edition;
 
 public:
-  Comic(string name, double price, QDateTime date, int totalCopies,
+  Comic(string name,
+        double price,
+        QDateTime date,
+        int totalCopies,
         string image,
-        string author, string editor, string genre, int pages,
-        periodicalType periodicity, int volume, string edition);
+        string author,
+        string editor,
+        string genre,
+        int pages,
+        periodicalType periodicity,
+        int volume,
+        string edition);
 
-  virtual ~Comic();
-
+  virtual ~Comic() = default;
+  virtual void accept(ProductVisitor &visitor);
   int getVolume() const;
   string getEdition() const;
   void setVolume(const int &newVolume);

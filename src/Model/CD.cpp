@@ -1,11 +1,28 @@
 #include "CD.h"
+#include "..\Visitor\ProductVisitor.h"
 
 
-CD::CD(string name, double price, QDateTime date, int totalCopies, string image,
-       string artist, string publisher, int duration, int diameter,
-       BookType bookType) : Disk(name, price, date, totalCopies, image, artist,
-                                 publisher, duration), diameter(diameter),
+CD::CD(string name,
+       double price,
+       QDateTime date,
+       int totalCopies,
+       string image,
+       string artist,
+       string publisher,
+       int duration,
+       int diameter,
+       BookType bookType) : Disk(name,
+                                 price,
+                                 date,
+                                 totalCopies,
+                                 image,
+                                 artist,
+                                 publisher,
+                                 duration),
+                            diameter(diameter),
                             bookType(bookType) {}
+
+void CD::accept(ProductVisitor &visitor) { visitor.visit(*this); }
 
 // Getter e Setter per diameter
 int CD::getDiameter() const {
@@ -20,6 +37,8 @@ void CD::setDiameter(const int &newDiameter) {
 CD::BookType CD::getBookType() const {
   return bookType;
 }
+
+// TODO: setBookTypeFromString for creating the object from import (?)
 
 void CD::setBookType(const BookType &type) {
   bookType = type;

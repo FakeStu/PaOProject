@@ -11,6 +11,7 @@ class Vinyl;
 class ProductVisitor {
 public:
   virtual ~ProductVisitor() = default;
+
   virtual void visit(Book &book) = 0;
   virtual void visit(CD &cd) = 0;
   virtual void visit(Magazine &magazine) = 0;
@@ -19,4 +20,4 @@ public:
   virtual void visit(Movie &film) = 0;
 };
 
-#endif // PRODUCTVISITOR_H
+#endif

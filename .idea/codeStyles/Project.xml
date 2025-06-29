@@ -1,12 +1,13 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
+    <option name="AUTODETECT_INDENTS" value="false" />
     <option name="OTHER_INDENT_OPTIONS">
       <value>
         <option name="INDENT_SIZE" value="2" />
       </value>
     </option>
-    <option name="RIGHT_MARGIN" value="80" />
-    <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="true" />
+    <option name="RIGHT_MARGIN" value="1000" />
+    <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <RiderCodeStyleSettings>
       <option name="/Default/CodeStyle/EditorConfig/EnableClangFormatSupport/@EntryValue" value="false" type="bool" />
       <option name="/Default/CodeStyle/CodeFormatting/CppFormatting/ALIGN_MULTILINE_BINARY_EXPRESSIONS_CHAIN/@EntryValue" value="true" type="bool" />
@@ -143,6 +144,11 @@
     <codeStyleSettings language="HTML">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="JSON">
+      <indentOptions>
+        <option name="TAB_SIZE" value="2" />
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="Jade">

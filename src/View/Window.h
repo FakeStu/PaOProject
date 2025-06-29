@@ -9,7 +9,6 @@
 #include <QWidget>
 #include "..\Model\Product.h"
 
-
 class Window : public QWidget {
   Q_OBJECT
 
@@ -32,83 +31,86 @@ private slots:
   void onImportClicked();
 
 private:
-  // Comuni
-  QComboBox *typeCombo;
-  QLineEdit *nameEdit;
-  QLineEdit *priceEdit;
-  QLineEdit *copiesEdit;
-  QDateEdit *dateEdit;
-  QLineEdit *imageEdit;
+  // TODO: Move common attributes (Book, Magazine, Comic - Vinyl, CD) together: remove duplication
 
-  // Specifici per Book
-  QLineEdit *authorEdit;
-  QLineEdit *editorEdit;
-  QLineEdit *pagesEdit;
-  QLineEdit *genreEdit;
-  QLineEdit *bindingEdit;
-  QLineEdit *languageEdit;
+  // Select Type Product
+  QComboBox *_typeInput;
 
-  // Specifici per CD
-  QLineEdit *artistEdit;
-  QLineEdit *publisherEdit;
-  QLineEdit *durationEdit;
-  QComboBox *bookTypeCombo;
-  QLineEdit *diameterEdit;
-  QLineEdit *versionEdit;
+  // Common Inputs
+  QLineEdit *_nameInput;
+  QLineEdit *_priceInput;
+  QLineEdit *_copiesInput;
+  QDateEdit *_dateInput;
+  QLineEdit *_imageInput;
 
-  // Specifici per Magazine
-  QLineEdit *magAuthorEdit;
-  QLineEdit *magEditorEdit;
-  QLineEdit *magGenreEdit;
-  QLineEdit *magPagesEdit;
-  QComboBox *magPeriodicityCombo;
-  QLineEdit *magTopicEdit;
+  // PaperProduct's Inputs
+  QLineEdit *_authorInput;
+  QLineEdit *_editorInput;
+  QLineEdit *_paperProductGenreInput;
+  QLineEdit *_pagesInput;
 
-  //Specifici per Comic
-  QLineEdit *comicAuthorEdit;
-  QLineEdit *comicEditorEdit;
-  QLineEdit *comicGenreEdit;
-  QLineEdit *comicPagesEdit;
-  QComboBox *comicPeriodicityCombo;
-  QLineEdit *comicVolumeEdit;
-  QLineEdit *comicEditionEdit;
+  // Book's Inputs
+  QLineEdit *_bindingInput;
+  QLineEdit *_languageInput;
 
-  // --- Vinyl specifici ---
-  QLineEdit *vinylArtistEdit;
-  QLineEdit *vinylPublisherEdit;
-  QLineEdit *vinylDurationEdit;
-  QComboBox *vinylFormatCombo;
-  QComboBox *vinylSpeedCombo;
-  QLineEdit *vinylColorEdit;
+  // Periodical's Inputs
+  QComboBox *_periodicityInput;
 
-  // --- Film specifici ---
-  QLineEdit *filmDirectorEdit;
-  QLineEdit *filmPhotoDirectorEdit;
-  QLineEdit *filmProtagonistEdit;
-  QLineEdit *filmDurationEdit;
-  QLineEdit *filmGenreEdit;
+  // Magazine's Inputs
+  QLineEdit *_topicInput;
 
-  QStackedWidget *specificStack; // per Book / CD
-  QWidget *bookWidget;
-  QWidget *cdWidget;
-  QWidget *magazineWidget;
-  QWidget *comicWidget;
-  QWidget *vinylWidget;
-  QWidget *filmWidget;
+  // Comic's Inputs
+  QLineEdit *_volumeInput;
+  QLineEdit *_editionInput;
 
-  QPushButton *searchButton;
-  QPushButton *confirmButton;
-  QPushButton *viewButton;
-  QPushButton *deleteButton;
-  QPushButton *exportButton;
-  QPushButton *importButton;
+  // Disk's Inputs
+  QLineEdit *_artistInput;
+  QLineEdit *_publisherInput;
+  QLineEdit *_diskDurationInput;
 
-  QTableWidget *tableWidget;
+  // CD's Inputs
+  QComboBox *_bookTypeInput;
+  QLineEdit *_diameterInput;
 
-  QLineEdit *searchLineEdit;
+  // Vinyl's Inputs
+  QLineEdit *_colorInput;
+  QComboBox *_formatInput;
+  QComboBox *_speedInput;
 
+  // Movie's Inputs
+  QLineEdit *_directorInput;
+  QLineEdit *_photoDirectorInput;
+  QLineEdit *_protagonistInput;
+  QLineEdit *_movieDurationInput;
+  QLineEdit *_movieGenreInput;
 
-  std::vector<std::shared_ptr<Product> > productList;
+  QStackedWidget *_specificProductWidget;
+
+  // Widgets
+  QWidget *_paperProductWidget;
+  QWidget *_periodicalProductWidget;
+  QWidget *_diskProductWidget;
+
+  QWidget *_bookWidget;
+  QWidget *_magazineWidget;
+  QWidget *_comicWidget;
+  QWidget *_cdWidget;
+  QWidget *_vinylWidget;
+  QWidget *_movieWidget;
+
+  QPushButton *_searchButton;
+  QPushButton *_confirmButton;
+  QPushButton *_viewButton;
+  QPushButton *_deleteButton;
+  QPushButton *_exportButton;
+  QPushButton *_importButton;
+
+  QTableWidget *_tableWidget;
+
+  QLineEdit *_searchInput;
+
+  // TODO: Not sure if this is the best place for this, window handling products?
+  std::vector<std::shared_ptr<Product> > _productList;
 
   void resetForm();
 };

@@ -1,10 +1,16 @@
 #include "Disk.h"
 
 // Costruttore
-Disk::Disk(string name, double price, QDateTime date, int totalCopies,
-           string image, string artist, string publisher,
+Disk::Disk(string name,
+           double price,
+           QDateTime date,
+           int totalCopies,
+           string image,
+           string artist,
+           string publisher,
            int duration) : Product(name, price, date, totalCopies, image),
-                           artist(artist), publisher(publisher),
+                           artist(artist),
+                           publisher(publisher),
                            duration(duration) {}
 
 

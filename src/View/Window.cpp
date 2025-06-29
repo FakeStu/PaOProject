@@ -1,326 +1,353 @@
 #include "Window.h"
+
+#include <iostream>
 #include <QFileDialog>
 #include <QFormLayout>
 #include <QHeaderView>
+#include <QInputDialog>
 #include <QLineEdit>
 #include <QMessageBox>
+#include "..\FileManagement\Export\JSON\JsonExportVisitor.h"
+#include "..\FileManagement\Export\XML\XmlExportVisitor.h"
+#include "..\FileManagement\Import\Import.h"
+#include "..\FileManagement\Import\JSON\JsonImport.h"
+#include "..\FileManagement\Import\XML\XmlImport.h"
 #include "..\Model\Book.h"
 #include "..\Model\CD.h"
 #include "..\Model\Comic.h"
 #include "..\Model\Magazine.h"
 #include "..\Model\Movie.h"
 #include "..\Model\Vinyl.h"
-#include "..\Visitor\Export\JSON\JsonExportVisitor.h"
-#include "..\Visitor\Import\JSON\JsonImportVisitor.h"
+#include "..\Visitor\ExportVisitor.h"
 
 Window::Window(QWidget *parent) : QWidget(parent) {
   QFormLayout *mainLayout = new QFormLayout(this);
 
-  typeCombo = new QComboBox(this);
-  typeCombo->addItems({"Book", "CD", "Magazine", "Comic", "Vinyl", "Film"});
-  connect(typeCombo,
+  _typeInput = new QComboBox(this);
+  _typeInput->addItems({"Book", "Magazine", "Comic", "CD", "Vinyl", "Movie"});
+  connect(_typeInput,
           &QComboBox::currentTextChanged,
           this,
           &Window::onTypeChanged);
 
-  // Comuni
+  // TODO: Aggiungere check a Input
+  // Common Inputs
   {
-    nameEdit = new QLineEdit(this);
-    priceEdit = new QLineEdit(this);
-    copiesEdit = new QLineEdit(this);
-    dateEdit = new QDateEdit(QDate::currentDate(), this);
-    dateEdit->setCalendarPopup(true);
-    imageEdit = new QLineEdit(this);
+    _nameInput = new QLineEdit(this);
+    _priceInput = new QLineEdit(this);
+    _copiesInput = new QLineEdit(this);
+    _dateInput = new QDateEdit(QDate::currentDate(), this);
+    _dateInput->setCalendarPopup(true);
+    _imageInput = new QLineEdit(this);
 
-    mainLayout->addRow("Tipo:", typeCombo);
-    mainLayout->addRow("Nome:", nameEdit);
-    mainLayout->addRow("Prezzo:", priceEdit);
-    mainLayout->addRow("Copie:", copiesEdit);
-    mainLayout->addRow("Data:", dateEdit);
-    mainLayout->addRow("Immagine:", imageEdit);
+    mainLayout->addRow("Tipo:", _typeInput);
+    mainLayout->addRow("Nome:", _nameInput);
+    mainLayout->addRow("Prezzo:", _priceInput);
+    mainLayout->addRow("Copie:", _copiesInput);
+    mainLayout->addRow("Data:", _dateInput);
+    mainLayout->addRow("Immagine:", _imageInput);
   }
 
-  specificStack = new QStackedWidget(this);
+  _specificProductWidget = new QStackedWidget(this);
+
+  // PaperProduct Widget
+  {
+    _paperProductWidget = new QWidget(this);
+    auto paperProductLayout = new QFormLayout(_paperProductWidget);
+
+    _authorInput = new QLineEdit(this);
+    _editorInput = new QLineEdit(this);
+    _paperProductGenreInput = new QLineEdit(this);
+    _pagesInput = new QLineEdit(this);
+
+    paperProductLayout->addRow("Author:", _authorInput);
+    paperProductLayout->addRow("Publisher:", _editorInput);
+    paperProductLayout->addRow("Number of pages:", _pagesInput);
+    paperProductLayout->addRow("Genre:", _paperProductGenreInput);
+  }
 
   // Book Widget
   {
-    bookWidget = new QWidget(this);
-    QFormLayout *bookLayout = new QFormLayout(bookWidget);
-    authorEdit = new QLineEdit(this);
-    editorEdit = new QLineEdit(this);
-    pagesEdit = new QLineEdit(this);
-    genreEdit = new QLineEdit(this);
-    bindingEdit = new QLineEdit(this);
-    languageEdit = new QLineEdit(this);
-    bookLayout->addRow("Autore:", authorEdit);
-    bookLayout->addRow("Editore:", editorEdit);
-    bookLayout->addRow("Pagine:", pagesEdit);
-    bookLayout->addRow("Genere:", genreEdit);
-    bookLayout->addRow("Rilegatura:", bindingEdit);
-    bookLayout->addRow("Lingua Originale:", languageEdit);
-    specificStack->addWidget(bookWidget);
+    _bookWidget = new QWidget(this);
+    auto *bookLayout = new QFormLayout(_bookWidget);
+
+    _bindingInput = new QLineEdit(this);
+    _languageInput = new QLineEdit(this);
+
+    bookLayout->addRow("Binding:", _bindingInput);
+    bookLayout->addRow("Original language:", _languageInput);
+
+    _specificProductWidget->addWidget(_bookWidget);
   }
 
-  // CD Widget
+  // Periodical Widget
   {
-    cdWidget = new QWidget(this);
-    QFormLayout *cdLayout = new QFormLayout(cdWidget);
-    artistEdit = new QLineEdit(this);
-    publisherEdit = new QLineEdit(this);
-    durationEdit = new QLineEdit(this);
-    bookTypeCombo = new QComboBox(this);
-    bookTypeCombo->addItems({
-                              "Red",
-                              "Yellow",
-                              "Orange",
-                              "Green",
-                              "White",
-                              "Blue"
-                            });
-    diameterEdit = new QLineEdit(this);
-    versionEdit = new QLineEdit(this);
-    cdLayout->addRow("Artista:", artistEdit);
-    cdLayout->addRow("Editore:", publisherEdit);
-    cdLayout->addRow("Durata:", durationEdit);
-    cdLayout->addRow("Tipo:", bookTypeCombo);
-    cdLayout->addRow("Diametro:", diameterEdit);
-    cdLayout->addRow("Versione:", versionEdit);
-    specificStack->addWidget(cdWidget);
+    _periodicalProductWidget = new QWidget(this);
+    auto *periodicalLayout = new QFormLayout(_periodicalProductWidget);
+
+    _periodicityInput = new QComboBox(this);
+    _periodicityInput->addItems({"Daily", "Weekly", "Monthly", "Annually"});
+
+    periodicalLayout->addRow("Periodicity:", _periodicityInput);
+    _specificProductWidget->addWidget(_periodicalProductWidget);
   }
 
   // Magazine Widget
   {
-    magazineWidget = new QWidget(this);
-    QFormLayout *magLayout = new QFormLayout(magazineWidget);
-    magAuthorEdit = new QLineEdit(this);
-    magEditorEdit = new QLineEdit(this);
-    magGenreEdit = new QLineEdit(this);
-    magPagesEdit = new QLineEdit(this);
-    magPeriodicityCombo = new QComboBox(this);
-    magPeriodicityCombo->addItems({"Daily", "Weekly", "Monthly", "Annually"});
-    magTopicEdit = new QLineEdit(this);
-    magLayout->addRow("Autore:", magAuthorEdit);
-    magLayout->addRow("Editore:", magEditorEdit);
-    magLayout->addRow("Genere:", magGenreEdit);
-    magLayout->addRow("Pagine:", magPagesEdit);
-    magLayout->addRow("Periodicità:", magPeriodicityCombo);
-    magLayout->addRow("Topic:", magTopicEdit);
-    specificStack->addWidget(magazineWidget);
+    _magazineWidget = new QWidget(this);
+    auto *magLayout = new QFormLayout(_magazineWidget);
+
+    _topicInput = new QLineEdit(this);
+
+    magLayout->addRow("Topic:", _topicInput);
+    _specificProductWidget->addWidget(_magazineWidget);
   }
 
   // Comic Widget
   {
-    comicWidget = new QWidget(this);
-    QFormLayout *comicLayout = new QFormLayout(comicWidget);
-    comicAuthorEdit = new QLineEdit(this);
-    comicEditorEdit = new QLineEdit(this);
-    comicGenreEdit = new QLineEdit(this);
-    comicPagesEdit = new QLineEdit(this);
-    comicPeriodicityCombo = new QComboBox(this);
-    comicPeriodicityCombo->addItems({"Daily", "Weekly", "Monthly", "Annually"});
-    comicVolumeEdit = new QLineEdit(this);
-    comicEditionEdit = new QLineEdit(this);
-    comicLayout->addRow("Autore:", comicAuthorEdit);
-    comicLayout->addRow("Editore:", comicEditorEdit);
-    comicLayout->addRow("Genere:", comicGenreEdit);
-    comicLayout->addRow("Pagine:", comicPagesEdit);
-    comicLayout->addRow("Periodicità:", comicPeriodicityCombo);
-    comicLayout->addRow("Volume:", comicVolumeEdit);
-    comicLayout->addRow("Edizione:", comicEditionEdit);
-    specificStack->addWidget(comicWidget);
+    _comicWidget = new QWidget(this);
+    auto *comicLayout = new QFormLayout(_comicWidget);
+    _volumeInput = new QLineEdit(this);
+    _editionInput = new QLineEdit(this);
+    comicLayout->addRow("Volume:", _volumeInput);
+    comicLayout->addRow("Edition:", _editionInput);
+    _specificProductWidget->addWidget(_comicWidget);
+  }
+
+  // Disk Widget
+  {
+    _diskProductWidget = new QWidget(this);
+    auto *diskLayout = new QFormLayout(_diskProductWidget);
+
+    _artistInput = new QLineEdit(this);
+    _publisherInput = new QLineEdit(this);
+    _diskDurationInput = new QLineEdit(this);
+
+    diskLayout->addRow("Artist:", _periodicityInput);
+    diskLayout->addRow("Publisher:", _periodicityInput);
+    diskLayout->addRow("Duration (min):", _periodicityInput);
+    _specificProductWidget->addWidget(_diskProductWidget);
+  }
+
+  // CD Widget
+  {
+    _cdWidget = new QWidget(this);
+    auto *cdLayout = new QFormLayout(_cdWidget);
+    _bookTypeInput = new QComboBox(this);
+    _bookTypeInput->addItems({
+                               "Red",
+                               "Yellow",
+                               "Orange",
+                               "Green",
+                               "White",
+                               "Blue"
+                             });
+    _diameterInput = new QLineEdit(this);
+    cdLayout->addRow("Artista:", _artistInput);
+    cdLayout->addRow("Editore:", _publisherInput);
+    cdLayout->addRow("Durata:", _diskDurationInput);
+    cdLayout->addRow("Tipo:", _bookTypeInput);
+    cdLayout->addRow("Diametro:", _diameterInput);
+    _specificProductWidget->addWidget(_cdWidget);
   }
 
   // Vinyl
   {
-    vinylWidget = new QWidget(this);
-    QFormLayout *vinylLayout = new QFormLayout(vinylWidget);
+    _vinylWidget = new QWidget(this);
+    auto *vinylLayout = new QFormLayout(_vinylWidget);
 
-    vinylArtistEdit = new QLineEdit(this);
-    vinylPublisherEdit = new QLineEdit(this);
-    vinylDurationEdit = new QLineEdit(this);
 
-    vinylFormatCombo = new QComboBox(this);
-    vinylFormatCombo->addItems({"12", "10", "7"});
+    _formatInput = new QComboBox(this);
+    _formatInput->addItems({"12", "10", "7"});
+    _speedInput = new QComboBox(this);
+    _speedInput->addItems({"33", "45"});
+    _colorInput = new QLineEdit(this);
 
-    vinylSpeedCombo = new QComboBox(this);
-    vinylSpeedCombo->addItems({"33", "45"});
+    vinylLayout->addRow("Format:", _formatInput);
+    vinylLayout->addRow("Speed:", _speedInput);
+    vinylLayout->addRow("Color:", _colorInput);
 
-    vinylColorEdit = new QLineEdit(this);
-
-    vinylLayout->addRow("Artista:", vinylArtistEdit);
-    vinylLayout->addRow("Editore:", vinylPublisherEdit);
-    vinylLayout->addRow("Durata:", vinylDurationEdit);
-    vinylLayout->addRow("Formato:", vinylFormatCombo);
-    vinylLayout->addRow("Velocità:", vinylSpeedCombo);
-    vinylLayout->addRow("Colore:", vinylColorEdit);
-
-    specificStack->addWidget(vinylWidget);
+    _specificProductWidget->addWidget(_vinylWidget);
   }
 
-  // Film
+  // Movie
   {
-    filmWidget = new QWidget(this);
-    QFormLayout *filmLayout = new QFormLayout(filmWidget);
+    _movieWidget = new QWidget(this);
+    auto *filmLayout = new QFormLayout(_movieWidget);
 
-    filmDirectorEdit = new QLineEdit(this);
-    filmPhotoDirectorEdit = new QLineEdit(this);
-    filmProtagonistEdit = new QLineEdit(this);
-    filmDurationEdit = new QLineEdit(this);
-    filmGenreEdit = new QLineEdit(this);
+    _directorInput = new QLineEdit(this);
+    _photoDirectorInput = new QLineEdit(this);
+    _protagonistInput = new QLineEdit(this);
+    _movieDurationInput = new QLineEdit(this);
+    _movieGenreInput = new QLineEdit(this);
 
-    filmLayout->addRow("Regista:", filmDirectorEdit);
-    filmLayout->addRow("Direttore Fotografia:", filmPhotoDirectorEdit);
-    filmLayout->addRow("Protagonista:", filmProtagonistEdit);
-    filmLayout->addRow("Durata (min):", filmDurationEdit);
-    filmLayout->addRow("Genere:", filmGenreEdit);
+    filmLayout->addRow("Director:", _directorInput);
+    filmLayout->addRow("Photo Director:", _photoDirectorInput);
+    filmLayout->addRow("Leading Actor:", _protagonistInput);
+    filmLayout->addRow("Duration (min):", _movieDurationInput);
+    filmLayout->addRow("Genre:", _movieGenreInput);
 
-    specificStack->addWidget(filmWidget);
+    _specificProductWidget->addWidget(_movieWidget);
   }
 
-  mainLayout->addRow(specificStack);
+  mainLayout->addRow(_specificProductWidget);
 
+  _searchInput = new QLineEdit(this);
+  _searchInput->setPlaceholderText("Cerca per nome");
 
-  searchLineEdit = new QLineEdit(this);
-  searchLineEdit->setPlaceholderText("Cerca per nome");
+  _searchButton = new QPushButton(this);
+  _searchButton->setIcon(QIcon::fromTheme("edit-find"));
+  _searchButton->setToolTip("Cerca");
 
-  searchButton = new QPushButton(this);
-  searchButton->setIcon(QIcon::fromTheme("edit-find"));
-  // Icona lente di ingrandimento
-  searchButton->setToolTip("Cerca");
-
-  QHBoxLayout *searchLayout = new QHBoxLayout();
-  searchLayout->addWidget(searchLineEdit);
-  searchLayout->addWidget(searchButton);
+  auto *searchLayout = new QHBoxLayout();
+  searchLayout->addWidget(_searchInput);
+  searchLayout->addWidget(_searchButton);
   mainLayout->addRow("Cerca:", searchLayout);
-  connect(searchButton,
+  connect(_searchButton,
           &QPushButton::clicked,
           this,
           &Window::onSearchClicked);
 
   // Confirm Button
-  confirmButton = new QPushButton("Aggiungi", this);
-  connect(confirmButton,
+  _confirmButton = new QPushButton("Aggiungi", this);
+  connect(_confirmButton,
           &QPushButton::clicked,
           this,
           &Window::onConfirmClicked);
-  mainLayout->addRow(confirmButton);
+  mainLayout->addRow(_confirmButton);
 
   // View Button
-  viewButton = new QPushButton("Visualizza", this);
-  mainLayout->addRow(viewButton);
-  connect(viewButton,
+  _viewButton = new QPushButton("Visualizza", this);
+  mainLayout->addRow(_viewButton);
+  connect(_viewButton,
           &QPushButton::clicked,
           this,
           &Window::onViewClicked);
 
   // Delete Button
-  deleteButton = new QPushButton("Elimina", this);
-  mainLayout->addRow(deleteButton);
-  connect(deleteButton,
+  _deleteButton = new QPushButton("Elimina", this);
+  mainLayout->addRow(_deleteButton);
+  connect(_deleteButton,
           &QPushButton::clicked,
           this,
           &Window::onDeleteClicked);
 
   // Export Button
-  exportButton = new QPushButton("Esporta in JSON", this);
-  mainLayout->addRow(exportButton);
-  connect(exportButton,
+  _exportButton = new QPushButton("Export to File", this);
+  mainLayout->addRow(_exportButton);
+  connect(_exportButton,
           &QPushButton::clicked,
           this,
           &Window::onExportClicked);
 
   // Import Button
-  importButton = new QPushButton("Importa un file JSON", this);
-  mainLayout->addRow(importButton);
-  connect(importButton,
+  _importButton = new QPushButton("Import from File", this);
+  mainLayout->addRow(_importButton);
+  connect(_importButton,
           &QPushButton::clicked,
           this,
           &Window::onImportClicked);
 
-  tableWidget = new QTableWidget(this);
-  tableWidget->setColumnCount(5);
-  tableWidget->horizontalHeader()->setStretchLastSection(true);
-  mainLayout->addWidget(tableWidget);
+  _tableWidget = new QTableWidget(this);
+  _tableWidget->setColumnCount(5);
+  _tableWidget->horizontalHeader()->setStretchLastSection(true);
+  mainLayout->addWidget(_tableWidget);
 
   onTypeChanged("Book");
 }
 
-
 void Window::resetForm() {
-  // Comuni
-  nameEdit->clear();
-  priceEdit->clear();
-  copiesEdit->clear();
-  imageEdit->clear();
-  dateEdit->setDate(QDate::currentDate());
+  // Common Inputs
+  {
+    _nameInput->clear();
+    _priceInput->clear();
+    _copiesInput->clear();
+    _imageInput->clear();
+    _dateInput->setDate(QDate::currentDate());
+  }
 
-  // Book
-  authorEdit->clear();
-  editorEdit->clear();
-  genreEdit->clear();
-  pagesEdit->clear();
-  bindingEdit->clear();
-  languageEdit->clear();
+  // PaperProduct Inputs
+  {
+    _authorInput->clear();
+    _editorInput->clear();
+    _paperProductGenreInput->clear();
+    _pagesInput->clear();
+  }
 
-  // CD
-  artistEdit->clear();
-  publisherEdit->clear();
-  durationEdit->clear();
-  diameterEdit->clear();
-  versionEdit->clear();
-  bookTypeCombo->setCurrentIndex(0);
+  // Book Inputs
+  {
+    _authorInput->clear();
+    _editorInput->clear();
+    _paperProductGenreInput->clear();
+    _pagesInput->clear();
+    _bindingInput->clear();
+    _languageInput->clear();
+  }
+
+  // Periodical Inputs
+  {
+    _periodicityInput->clear();
+  }
 
   // Magazine
-  magAuthorEdit->clear();
-  magEditorEdit->clear();
-  magGenreEdit->clear();
-  magPagesEdit->clear();
-  magPeriodicityCombo->setCurrentIndex(0);
-  magTopicEdit->clear();
+  {
+    _topicInput->clear();
+  }
 
   // Comic
-  comicAuthorEdit->clear();
-  comicEditorEdit->clear();
-  comicGenreEdit->clear();
-  comicPagesEdit->clear();
-  comicPeriodicityCombo->setCurrentIndex(0);
-  comicVolumeEdit->clear();
-  comicEditionEdit->clear();
+  {
+    _volumeInput->clear();
+    _editionInput->clear();
+  }
+
+  // Disk Inputs
+  {
+    _artistInput->clear();
+    _publisherInput->clear();
+    _diskDurationInput->clear();
+  }
+
+  // CD Inputs
+  {
+    _diameterInput->clear();
+    _bookTypeInput->setCurrentIndex(0);
+  }
 
   //Vinyl
-  vinylArtistEdit->clear();
-  vinylPublisherEdit->clear();
-  vinylDurationEdit->clear();
-  vinylFormatCombo->setCurrentIndex(0);
-  vinylSpeedCombo->setCurrentIndex(0);
-  vinylColorEdit->clear();
+  {
+    _formatInput->setCurrentIndex(0);
+    _speedInput->setCurrentIndex(0);
+    _colorInput->clear();
+  }
 
   //Film
-  filmDirectorEdit->clear();
-  filmPhotoDirectorEdit->clear();
-  filmProtagonistEdit->clear();
-  filmDurationEdit->clear();
-  filmGenreEdit->clear();
+  {
+    _directorInput->clear();
+    _photoDirectorInput->clear();
+    _protagonistInput->clear();
+    _movieDurationInput->clear();
+    _movieGenreInput->clear();
+  }
 }
 
 void Window::onTypeChanged(const QString &type) {
-  if (type == "Book") specificStack->setCurrentWidget(bookWidget);
-  else if (type == "CD") specificStack->setCurrentWidget(cdWidget);
-  else if (type == "Magazine") specificStack->setCurrentWidget(magazineWidget);
-  else if (type == "Comic") specificStack->setCurrentWidget(comicWidget);
-  else if (type == "Vinyl") specificStack->setCurrentWidget(vinylWidget);
-  else if (type == "Film") specificStack->setCurrentWidget(filmWidget);
+  if (type == "Book") _specificProductWidget->setCurrentWidget(_bookWidget);
+  else if (type == "CD") _specificProductWidget->setCurrentWidget(_cdWidget);
+  else if (type == "Magazine") _specificProductWidget->setCurrentWidget(_magazineWidget);
+  else if (type == "Comic") _specificProductWidget->setCurrentWidget(_comicWidget);
+  else if (type == "Vinyl") _specificProductWidget->setCurrentWidget(_vinylWidget);
+  else if (type == "Film") _specificProductWidget->setCurrentWidget(_movieWidget);
 }
 
 void Window::onConfirmClicked() {
-  QString type = typeCombo->currentText();
+  QString type = _typeInput->currentText();
 
   // Campi comuni
-  std::string name = nameEdit->text().toStdString();
-  double price = priceEdit->text().toDouble();
-  QDateTime date = dateEdit->dateTime();
-  int copies = copiesEdit->text().toInt();
-  std::string image = imageEdit->text().toStdString();
+  std::string name = _nameInput->text().toStdString();
+  double price = _priceInput->text().toDouble();
+  QDateTime date = _dateInput->dateTime();
+  int copies = _copiesInput->text().toInt();
+  std::string image = _imageInput->text().toStdString();
 
   if (name.empty()) {
     QMessageBox::warning(this, "Errore", "Manca il campo Nome");
@@ -328,16 +355,16 @@ void Window::onConfirmClicked() {
   }
 
   if (type == "Book") {
-    std::string author = authorEdit->text().toStdString();
+    std::string author = _authorInput->text().toStdString();
     if (author.empty()) {
       QMessageBox::warning(this, "Errore", "Manca il campo Autore");
       return;
     }
-    std::string editor = editorEdit->text().toStdString();
-    std::string genre = genreEdit->text().toStdString();
-    int pages = pagesEdit->text().toInt();
-    std::string binding = bindingEdit->text().toStdString();
-    std::string language = languageEdit->text().toStdString();
+    std::string editor = _editorInput->text().toStdString();
+    std::string genre = _paperProductGenreInput->text().toStdString();
+    int pages = _pagesInput->text().toInt();
+    std::string binding = _bindingInput->text().toStdString();
+    std::string language = _languageInput->text().toStdString();
 
     std::shared_ptr<Book> newBook = std::make_shared<Book>(
                                                            name,
@@ -352,16 +379,15 @@ void Window::onConfirmClicked() {
                                                            binding,
                                                            language);
 
-    productList.push_back(newBook);
+    _productList.push_back(newBook);
     QMessageBox::information(this, "Successo", "Libro aggiunto con successo");
   } else if (type == "CD") {
-    std::string artist = artistEdit->text().toStdString();
-    std::string publisher = publisherEdit->text().toStdString();
-    int duration = durationEdit->text().toInt();
-    int diameter = diameterEdit->text().toInt();
-    std::string version = versionEdit->text().toStdString();
+    std::string artist = _artistInput->text().toStdString();
+    std::string publisher = _publisherInput->text().toStdString();
+    int duration = _diskDurationInput->text().toInt();
+    int diameter = _diameterInput->text().toInt();
 
-    QString typeStr = bookTypeCombo->currentText();
+    QString typeStr = _bookTypeInput->currentText();
     CD::BookType bookType;
     if (typeStr == "Red") bookType = CD::Red;
     else if (typeStr == "Yellow") bookType = CD::Yellow;
@@ -382,24 +408,24 @@ void Window::onConfirmClicked() {
                                                      diameter,
                                                      bookType);
 
-    productList.push_back(newCD);
+    _productList.push_back(newCD);
     QMessageBox::information(this, "Successo", "CD aggiunto con successo");
   } else if (type == "Magazine") {
-    std::string author = magAuthorEdit->text().toStdString();
+    std::string author = _authorInput->text().toStdString();
     if (author.empty()) {
       QMessageBox::warning(this, "Errore", "Manca il campo Autore");
       return;
     }
-    std::string editor = magEditorEdit->text().toStdString();
-    std::string genre = magGenreEdit->text().toStdString();
-    int pages = magPagesEdit->text().toInt();
-    QString perStr = magPeriodicityCombo->currentText();
+    std::string editor = _editorInput->text().toStdString();
+    std::string genre = _paperProductGenreInput->text().toStdString();
+    int pages = _pagesInput->text().toInt();
+    QString perStr = _periodicityInput->currentText();
     Periodical::periodicalType periodicity;
     if (perStr == "Daily") periodicity = Periodical::daily;
     else if (perStr == "Weekly") periodicity = Periodical::weekly;
     else if (perStr == "Monthly") periodicity = Periodical::monthly;
     else periodicity = Periodical::annually;
-    std::string topic = magTopicEdit->text().toStdString();
+    std::string topic = _topicInput->text().toStdString();
 
     std::shared_ptr<Magazine> newMagazine = std::make_shared<Magazine>(
                                                                        name,
@@ -414,27 +440,27 @@ void Window::onConfirmClicked() {
                                                                        periodicity,
                                                                        topic);
 
-    productList.push_back(newMagazine);
+    _productList.push_back(newMagazine);
     QMessageBox::information(this,
                              "Successo",
                              "Magazine aggiunto con successo");
   } else if (type == "Comic") {
-    std::string author = comicAuthorEdit->text().toStdString();
+    std::string author = _authorInput->text().toStdString();
     if (author.empty()) {
       QMessageBox::warning(this, "Errore", "Manca il campo Autore");
       return;
     }
-    std::string editor = comicEditorEdit->text().toStdString();
-    std::string genre = comicGenreEdit->text().toStdString();
-    int pages = comicPagesEdit->text().toInt();
-    QString perStr = comicPeriodicityCombo->currentText();
+    std::string editor = _editorInput->text().toStdString();
+    std::string genre = _paperProductGenreInput->text().toStdString();
+    int pages = _pagesInput->text().toInt();
+    QString perStr = _periodicityInput->currentText();
     Periodical::periodicalType periodicity;
     if (perStr == "Daily") periodicity = Periodical::daily;
     else if (perStr == "Weekly") periodicity = Periodical::weekly;
     else if (perStr == "Monthly") periodicity = Periodical::monthly;
     else periodicity = Periodical::annually;
-    int volume = comicVolumeEdit->text().toInt();
-    std::string edition = comicEditionEdit->text().toStdString();
+    int volume = _volumeInput->text().toInt();
+    std::string edition = _editionInput->text().toStdString();
 
     std::shared_ptr<Comic> newComic = std::make_shared<Comic>(
                                                               name,
@@ -450,13 +476,13 @@ void Window::onConfirmClicked() {
                                                               volume,
                                                               edition);
 
-    productList.push_back(newComic);
+    _productList.push_back(newComic);
     QMessageBox::information(this, "Successo", "Comic aggiunto con successo");
   } else if (type == "Vinyl") {
-    std::string artist = vinylArtistEdit->text().toStdString();
-    std::string publisher = vinylPublisherEdit->text().toStdString();
-    int duration = vinylDurationEdit->text().toInt();
-    int formatInt = vinylFormatCombo->currentText().toInt();
+    std::string artist = _artistInput->text().toStdString();
+    std::string publisher = _publisherInput->text().toStdString();
+    int duration = _diskDurationInput->text().toInt();
+    int formatInt = _formatInput->currentText().toInt();
     Vinyl::FormatType format;
     switch (formatInt) {
       case 12:
@@ -471,11 +497,11 @@ void Window::onConfirmClicked() {
       default:
         format = Vinyl::FormatType::Twelve; // default
     }
-    int speedInt = vinylSpeedCombo->currentText().toInt();
+    int speedInt = _speedInput->currentText().toInt();
     Vinyl::SpeedType speed = (speedInt == 33)
                                ? Vinyl::SpeedType::ThirtyThree
                                : Vinyl::SpeedType::FortyFive;
-    std::string color = vinylColorEdit->text().toStdString();
+    std::string color = _colorInput->text().toStdString();
 
     std::shared_ptr<Vinyl> newVinyl = std::make_shared<Vinyl>(
                                                               name,
@@ -490,14 +516,14 @@ void Window::onConfirmClicked() {
                                                               format,
                                                               speed
                                                              );
-    productList.push_back(newVinyl);
+    _productList.push_back(newVinyl);
     QMessageBox::information(this, "Successo", "Vinyl aggiunto con successo");
   } else if (type == "Film") {
-    std::string director = filmDirectorEdit->text().toStdString();
-    std::string photoDirector = filmPhotoDirectorEdit->text().toStdString();
-    std::string protagonist = filmProtagonistEdit->text().toStdString();
-    int duration = filmDurationEdit->text().toInt();
-    std::string genre = filmGenreEdit->text().toStdString();
+    std::string director = _directorInput->text().toStdString();
+    std::string photoDirector = _photoDirectorInput->text().toStdString();
+    std::string protagonist = _protagonistInput->text().toStdString();
+    int duration = _movieDurationInput->text().toInt();
+    std::string genre = _movieGenreInput->text().toStdString();
 
     std::shared_ptr<Movie> newFilm = std::make_shared<Movie>(
                                                              name,
@@ -511,7 +537,7 @@ void Window::onConfirmClicked() {
                                                              duration,
                                                              genre
                                                             );
-    productList.push_back(newFilm);
+    _productList.push_back(newFilm);
     QMessageBox::information(this, "Successo", "Film aggiunto con successo");
   }
 
@@ -520,128 +546,128 @@ void Window::onConfirmClicked() {
 }
 
 void Window::onViewClicked() {
-  QString selected = typeCombo->currentText();
+  QString selected = _typeInput->currentText();
 
-  tableWidget->clear();
-  tableWidget->setRowCount(0);
+  _tableWidget->clear();
+  _tableWidget->setRowCount(0);
 
   if (selected == "Book") {
-    tableWidget->setColumnCount(5);
-    tableWidget->setHorizontalHeaderLabels({
-                                             "Nome",
-                                             "Autore",
-                                             "Prezzo",
-                                             "Copie",
-                                             "Lingua"
-                                           });
+    _tableWidget->setColumnCount(5);
+    _tableWidget->setHorizontalHeaderLabels({
+                                              "Nome",
+                                              "Autore",
+                                              "Prezzo",
+                                              "Copie",
+                                              "Lingua"
+                                            });
 
     int row = 0;
-    for (const auto &product: productList) {
+    for (const auto &product: _productList) {
       auto book = std::dynamic_pointer_cast<Book>(product);
       if (book) {
-        tableWidget->insertRow(row);
-        tableWidget->setItem(row,
-                             0,
-                             new
-                             QTableWidgetItem(QString::fromStdString(book->
-                                                                     getName())));
-        tableWidget->setItem(row,
-                             1,
-                             new QTableWidgetItem(QString::fromStdString(book->
-                                                                         getAuthor())));
-        tableWidget->setItem(row,
-                             2,
-                             new QTableWidgetItem(QString::number(book->
-                                                                  getPrice())));
-        tableWidget->setItem(row,
-                             3,
-                             new QTableWidgetItem(QString::number(book->
-                                                                  getTotalCopies())));
-        tableWidget->setItem(row,
-                             4,
-                             new QTableWidgetItem(QString::fromStdString(book->
-                                                                         getLanguage())));
+        _tableWidget->insertRow(row);
+        _tableWidget->setItem(row,
+                              0,
+                              new
+                              QTableWidgetItem(QString::fromStdString(book->
+                                                                      getName())));
+        _tableWidget->setItem(row,
+                              1,
+                              new QTableWidgetItem(QString::fromStdString(book->
+                                                                          getAuthor())));
+        _tableWidget->setItem(row,
+                              2,
+                              new QTableWidgetItem(QString::number(book->
+                                                                   getPrice())));
+        _tableWidget->setItem(row,
+                              3,
+                              new QTableWidgetItem(QString::number(book->
+                                                                   getTotalCopies())));
+        _tableWidget->setItem(row,
+                              4,
+                              new QTableWidgetItem(QString::fromStdString(book->
+                                                                          getLanguage())));
         ++row;
       }
     }
   } else if (selected == "CD") {
-    tableWidget->setColumnCount(5);
-    tableWidget->setHorizontalHeaderLabels({
-                                             "Nome",
-                                             "Artista",
-                                             "Prezzo",
-                                             "Copie",
-                                             "Durata"
-                                           });
+    _tableWidget->setColumnCount(5);
+    _tableWidget->setHorizontalHeaderLabels({
+                                              "Nome",
+                                              "Artista",
+                                              "Prezzo",
+                                              "Copie",
+                                              "Durata"
+                                            });
 
     int row = 0;
-    for (const auto &product: productList) {
+    for (const auto &product: _productList) {
       auto cd = std::dynamic_pointer_cast<CD>(product);
       if (cd) {
-        tableWidget->insertRow(row);
-        tableWidget->setItem(row,
-                             0,
-                             new
-                             QTableWidgetItem(QString::fromStdString(cd->
-                                                                     getName())));
-        tableWidget->setItem(row,
-                             1,
-                             new
-                             QTableWidgetItem(QString::fromStdString(cd->
-                                                                     getArtist())));
-        tableWidget->setItem(row,
-                             2,
-                             new
-                             QTableWidgetItem(QString::number(cd->getPrice())));
-        tableWidget->setItem(row,
-                             3,
-                             new
-                             QTableWidgetItem(QString::number(cd->
-                                                              getTotalCopies())));
-        tableWidget->setItem(row,
-                             4,
-                             new
-                             QTableWidgetItem(QString::number(cd->getDuration())));
+        _tableWidget->insertRow(row);
+        _tableWidget->setItem(row,
+                              0,
+                              new
+                              QTableWidgetItem(QString::fromStdString(cd->
+                                                                      getName())));
+        _tableWidget->setItem(row,
+                              1,
+                              new
+                              QTableWidgetItem(QString::fromStdString(cd->
+                                                                      getArtist())));
+        _tableWidget->setItem(row,
+                              2,
+                              new
+                              QTableWidgetItem(QString::number(cd->getPrice())));
+        _tableWidget->setItem(row,
+                              3,
+                              new
+                              QTableWidgetItem(QString::number(cd->
+                                                               getTotalCopies())));
+        _tableWidget->setItem(row,
+                              4,
+                              new
+                              QTableWidgetItem(QString::number(cd->getDuration())));
         ++row;
       }
     }
   } else if (selected == "Magazine") {
-    tableWidget->setColumnCount(6);
-    tableWidget->setHorizontalHeaderLabels({
-                                             "Nome",
-                                             "Autore",
-                                             "Prezzo",
-                                             "Copie",
-                                             "Periodicità",
-                                             "Topic"
-                                           });
+    _tableWidget->setColumnCount(6);
+    _tableWidget->setHorizontalHeaderLabels({
+                                              "Nome",
+                                              "Autore",
+                                              "Prezzo",
+                                              "Copie",
+                                              "Periodicità",
+                                              "Topic"
+                                            });
 
     int row = 0;
-    for (const auto &product: productList) {
+    for (const auto &product: _productList) {
       auto mag = std::dynamic_pointer_cast<Magazine>(product);
       if (mag) {
-        tableWidget->insertRow(row);
-        tableWidget->setItem(row,
-                             0,
-                             new
-                             QTableWidgetItem(QString::fromStdString(mag->
-                                                                     getName())));
-        tableWidget->setItem(row,
-                             1,
-                             new
-                             QTableWidgetItem(QString::fromStdString(mag->
-                                                                     getAuthor())));
-        tableWidget->setItem(row,
-                             2,
-                             new
-                             QTableWidgetItem(QString::number(mag->getPrice())));
-        tableWidget->setItem(row,
-                             3,
-                             new QTableWidgetItem(QString::number(mag->
-                                                                  getTotalCopies())));
+        _tableWidget->insertRow(row);
+        _tableWidget->setItem(row,
+                              0,
+                              new
+                              QTableWidgetItem(QString::fromStdString(mag->
+                                                                      getName())));
+        _tableWidget->setItem(row,
+                              1,
+                              new
+                              QTableWidgetItem(QString::fromStdString(mag->
+                                                                      getAuthor())));
+        _tableWidget->setItem(row,
+                              2,
+                              new
+                              QTableWidgetItem(QString::number(mag->getPrice())));
+        _tableWidget->setItem(row,
+                              3,
+                              new QTableWidgetItem(QString::number(mag->
+                                                                   getTotalCopies())));
 
         QString periodicityStr;
-        QString p = QString::fromStdString(mag->getPeriodicity());
+        QString p = QString::fromStdString(mag->getPeriodicityAsString());
 
         if (p == "daily") periodicityStr = "Daily";
         else if (p == "weekly") periodicityStr = "Weekly";
@@ -650,51 +676,51 @@ void Window::onViewClicked() {
         else periodicityStr = "Unknown";
 
 
-        tableWidget->setItem(row, 4, new QTableWidgetItem(periodicityStr));
-        tableWidget->setItem(row,
-                             5,
-                             new
-                             QTableWidgetItem(QString::fromStdString(mag->
-                                                                     getTopic())));
+        _tableWidget->setItem(row, 4, new QTableWidgetItem(periodicityStr));
+        _tableWidget->setItem(row,
+                              5,
+                              new
+                              QTableWidgetItem(QString::fromStdString(mag->
+                                                                      getTopic())));
         ++row;
       }
     }
   } else if (selected == "Comic") {
-    tableWidget->setColumnCount(7);
-    tableWidget->setHorizontalHeaderLabels({
-                                             "Nome",
-                                             "Autore",
-                                             "Prezzo",
-                                             "Copie",
-                                             "Periodicità",
-                                             "Volume",
-                                             "Edizione"
-                                           });
+    _tableWidget->setColumnCount(7);
+    _tableWidget->setHorizontalHeaderLabels({
+                                              "Nome",
+                                              "Autore",
+                                              "Prezzo",
+                                              "Copie",
+                                              "Periodicità",
+                                              "Volume",
+                                              "Edizione"
+                                            });
 
     int row = 0;
-    for (const auto &product: productList) {
+    for (const auto &product: _productList) {
       auto comic = std::dynamic_pointer_cast<Comic>(product);
       if (comic) {
-        tableWidget->insertRow(row);
-        tableWidget->setItem(row,
-                             0,
-                             new QTableWidgetItem(QString::fromStdString(comic->
-                                                                         getName())));
-        tableWidget->setItem(row,
-                             1,
-                             new QTableWidgetItem(QString::fromStdString(comic->
-                                                                         getAuthor())));
-        tableWidget->setItem(row,
-                             2,
-                             new QTableWidgetItem(QString::number(comic->
-                                                                  getPrice())));
-        tableWidget->setItem(row,
-                             3,
-                             new QTableWidgetItem(QString::number(comic->
-                                                                  getTotalCopies())));
+        _tableWidget->insertRow(row);
+        _tableWidget->setItem(row,
+                              0,
+                              new QTableWidgetItem(QString::fromStdString(comic->
+                                                                          getName())));
+        _tableWidget->setItem(row,
+                              1,
+                              new QTableWidgetItem(QString::fromStdString(comic->
+                                                                          getAuthor())));
+        _tableWidget->setItem(row,
+                              2,
+                              new QTableWidgetItem(QString::number(comic->
+                                                                   getPrice())));
+        _tableWidget->setItem(row,
+                              3,
+                              new QTableWidgetItem(QString::number(comic->
+                                                                   getTotalCopies())));
 
         QString periodicityStr;
-        QString p = QString::fromStdString(comic->getPeriodicity());
+        QString p = QString::fromStdString(comic->getPeriodicityAsString());
 
         if (p == "daily") periodicityStr = "Daily";
         else if (p == "weekly") periodicityStr = "Weekly";
@@ -702,108 +728,108 @@ void Window::onViewClicked() {
         else if (p == "annually") periodicityStr = "Annually";
         else periodicityStr = "Unknown";
 
-        tableWidget->setItem(row, 4, new QTableWidgetItem(periodicityStr));
-        tableWidget->setItem(row,
-                             5,
-                             new QTableWidgetItem(QString::number(comic->
-                                                                  getVolume())));
-        tableWidget->setItem(row,
-                             6,
-                             new QTableWidgetItem(QString::fromStdString(comic->
-                                                                         getEdition())));
+        _tableWidget->setItem(row, 4, new QTableWidgetItem(periodicityStr));
+        _tableWidget->setItem(row,
+                              5,
+                              new QTableWidgetItem(QString::number(comic->
+                                                                   getVolume())));
+        _tableWidget->setItem(row,
+                              6,
+                              new QTableWidgetItem(QString::fromStdString(comic->
+                                                                          getEdition())));
         ++row;
       }
     }
   } else if (selected == "Vinyl") {
-    tableWidget->setColumnCount(7);
-    tableWidget->setHorizontalHeaderLabels({
-                                             "Nome",
-                                             "Artista",
-                                             "Editore",
-                                             "Durata",
-                                             "Formato",
-                                             "Velocità",
-                                             "Colore"
-                                           });
+    _tableWidget->setColumnCount(7);
+    _tableWidget->setHorizontalHeaderLabels({
+                                              "Nome",
+                                              "Artista",
+                                              "Editore",
+                                              "Durata",
+                                              "Formato",
+                                              "Velocità",
+                                              "Colore"
+                                            });
 
     int row = 0;
-    for (const auto &product: productList) {
+    for (const auto &product: _productList) {
       auto vinyl = std::dynamic_pointer_cast<Vinyl>(product);
       if (vinyl) {
-        tableWidget->insertRow(row);
-        tableWidget->setItem(row,
-                             0,
-                             new QTableWidgetItem(QString::fromStdString(vinyl->
-                                                                         getName())));
-        tableWidget->setItem(row,
-                             1,
-                             new QTableWidgetItem(QString::fromStdString(vinyl->
-                                                                         getArtist())));
-        tableWidget->setItem(row,
-                             2,
-                             new QTableWidgetItem(QString::fromStdString(vinyl->
-                                                                         getPublisher())));
-        tableWidget->setItem(row,
-                             3,
-                             new QTableWidgetItem(QString::number(vinyl->
-                                                                  getDuration())));
-        tableWidget->setItem(row,
-                             4,
-                             new QTableWidgetItem(QString::fromStdString(vinyl->
-                                                                         getFormatAsString())));
-        tableWidget->setItem(row,
-                             5,
-                             new QTableWidgetItem(QString::fromStdString(vinyl->
-                                                                         getSpeedAsString())));
-        tableWidget->setItem(row,
-                             6,
-                             new QTableWidgetItem(QString::fromStdString(vinyl->
-                                                                         getColor())));
+        _tableWidget->insertRow(row);
+        _tableWidget->setItem(row,
+                              0,
+                              new QTableWidgetItem(QString::fromStdString(vinyl->
+                                                                          getName())));
+        _tableWidget->setItem(row,
+                              1,
+                              new QTableWidgetItem(QString::fromStdString(vinyl->
+                                                                          getArtist())));
+        _tableWidget->setItem(row,
+                              2,
+                              new QTableWidgetItem(QString::fromStdString(vinyl->
+                                                                          getPublisher())));
+        _tableWidget->setItem(row,
+                              3,
+                              new QTableWidgetItem(QString::number(vinyl->
+                                                                   getDuration())));
+        _tableWidget->setItem(row,
+                              4,
+                              new QTableWidgetItem(QString::fromStdString(vinyl->
+                                                                          getFormatAsString())));
+        _tableWidget->setItem(row,
+                              5,
+                              new QTableWidgetItem(QString::fromStdString(vinyl->
+                                                                          getSpeedAsString())));
+        _tableWidget->setItem(row,
+                              6,
+                              new QTableWidgetItem(QString::fromStdString(vinyl->
+                                                                          getColor())));
         ++row;
       }
     }
   } else if (selected == "Film") {
-    tableWidget->setColumnCount(6);
-    tableWidget->setHorizontalHeaderLabels({
-                                             "Nome",
-                                             "Regista",
-                                             "Direttore Foto",
-                                             "Protagonista",
-                                             "Durata",
-                                             "Genere"
-                                           });
+    _tableWidget->setColumnCount(6);
+    _tableWidget->setHorizontalHeaderLabels({
+                                              "Nome",
+                                              "Regista",
+                                              "Direttore Foto",
+                                              "Protagonista",
+                                              "Durata",
+                                              "Genere"
+                                            });
 
     int row = 0;
-    for (const auto &product: productList) {
+    for (const auto &product: _productList) {
       auto film = std::dynamic_pointer_cast<Movie>(product);
       if (film) {
-        tableWidget->insertRow(row);
-        tableWidget->setItem(row,
-                             0,
-                             new
-                             QTableWidgetItem(QString::fromStdString(film->
-                                                                     getName())));
-        tableWidget->setItem(row,
-                             1,
-                             new QTableWidgetItem(QString::fromStdString(film->
-                                                                         getDirector())));
-        tableWidget->setItem(row,
-                             2,
-                             new QTableWidgetItem(QString::fromStdString(film->
-                                                                         getPhotoDirector())));
-        tableWidget->setItem(row,
-                             3,
-                             new QTableWidgetItem(QString::fromStdString(film->
-                                                                         getProtagonist())));
-        tableWidget->setItem(row,
-                             4,
-                             new QTableWidgetItem(QString::number(film->
-                                                                  getDuration())));
-        tableWidget->setItem(row,
-                             5,
-                             new
-                             QTableWidgetItem(QString::fromStdString(film->
-                                                                     getGenre())));
+        _tableWidget->insertRow(row);
+        _tableWidget->setItem(row,
+                              0,
+                              new
+                              QTableWidgetItem(QString::fromStdString(film->
+                                                                      getName())));
+        _tableWidget->setItem(row,
+                              1,
+                              new QTableWidgetItem(QString::fromStdString(film->
+                                                                          getDirector())));
+        _tableWidget->setItem(row,
+                              2,
+                              new QTableWidgetItem(QString::fromStdString(film->
+                                                                          getPhotoDirector())));
+        _tableWidget->setItem(row,
+                              3,
+                              new QTableWidgetItem(QString::fromStdString(film->
+                                                                          getProtagonist())));
+        _tableWidget->setItem(row,
+                              4,
+                              new QTableWidgetItem(QString::number(film->
+                                                                   getDuration())));
+        _tableWidget->setItem(row,
+                              5,
+                              new
+                              QTableWidgetItem(QString::fromStdString(film->
+                                                                      getGenre())));
         ++row;
       }
     }
@@ -811,19 +837,19 @@ void Window::onViewClicked() {
 }
 
 void Window::onSearchClicked() {
-  QString searchText = searchLineEdit->text().trimmed();
+  QString searchText = _searchInput->text().trimmed();
   if (searchText.isEmpty()) return;
 
-  tableWidget->clear();
-  tableWidget->setRowCount(0);
-  tableWidget->setColumnCount(4);
-  tableWidget->setHorizontalHeaderLabels({"Tipo", "Nome", "Prezzo", "Copie"});
+  _tableWidget->clear();
+  _tableWidget->setRowCount(0);
+  _tableWidget->setColumnCount(4);
+  _tableWidget->setHorizontalHeaderLabels({"Tipo", "Nome", "Prezzo", "Copie"});
 
   int row = 0;
-  for (const auto &product: productList) {
+  for (const auto &product: _productList) {
     QString name = QString::fromStdString(product->getName());
     if (name.contains(searchText, Qt::CaseInsensitive)) {
-      tableWidget->insertRow(row);
+      _tableWidget->insertRow(row);
 
       QString type;
 
@@ -835,16 +861,16 @@ void Window::onSearchClicked() {
       else if (dynamic_cast<Movie *>(product.get())) type = "Film";
       else type = "Sconosciuto";
 
-      tableWidget->setItem(row, 0, new QTableWidgetItem(type));
-      tableWidget->setItem(row, 1, new QTableWidgetItem(name));
-      tableWidget->setItem(row,
-                           2,
-                           new QTableWidgetItem(QString::number(product->
-                                                                getPrice())));
-      tableWidget->setItem(row,
-                           3,
-                           new QTableWidgetItem(QString::number(product->
-                                                                getTotalCopies())));
+      _tableWidget->setItem(row, 0, new QTableWidgetItem(type));
+      _tableWidget->setItem(row, 1, new QTableWidgetItem(name));
+      _tableWidget->setItem(row,
+                            2,
+                            new QTableWidgetItem(QString::number(product->
+                                                                 getPrice())));
+      _tableWidget->setItem(row,
+                            3,
+                            new QTableWidgetItem(QString::number(product->
+                                                                 getTotalCopies())));
       ++row;
     }
   }
@@ -858,7 +884,7 @@ void Window::onSearchClicked() {
 }
 
 void Window::onDeleteClicked() {
-  int currentRow = tableWidget->currentRow();
+  int currentRow = _tableWidget->currentRow();
 
   if (currentRow < 0) {
     QMessageBox::warning(this, "Errore", "Nessun elemento selezionato");
@@ -876,48 +902,48 @@ void Window::onDeleteClicked() {
     return; // annullato
   }
 
-  QString selectedType = typeCombo->currentText();
+  QString selectedType = _typeInput->currentText();
   int indexInProductList = -1;
   int count = 0;
 
-  for (size_t i = 0; i < productList.size(); ++i) {
+  for (size_t i = 0; i < _productList.size(); ++i) {
     if (selectedType == "Book" && std::dynamic_pointer_cast<
-          Book>(productList[i])) {
+          Book>(_productList[i])) {
       if (count == currentRow) {
         indexInProductList = static_cast<int>(i);
         break;
       }
       ++count;
     } else if (selectedType == "CD" && std::dynamic_pointer_cast<
-                 CD>(productList[i])) {
+                 CD>(_productList[i])) {
       if (count == currentRow) {
         indexInProductList = static_cast<int>(i);
         break;
       }
       ++count;
     } else if (selectedType == "Magazine" && std::dynamic_pointer_cast<
-                 Magazine>(productList[i])) {
+                 Magazine>(_productList[i])) {
       if (count == currentRow) {
         indexInProductList = static_cast<int>(i);
         break;
       }
       ++count;
     } else if (selectedType == "Comic" && std::dynamic_pointer_cast<
-                 Comic>(productList[i])) {
+                 Comic>(_productList[i])) {
       if (count == currentRow) {
         indexInProductList = static_cast<int>(i);
         break;
       }
       ++count;
     } else if (selectedType == "Vinyl" && std::dynamic_pointer_cast<
-                 Vinyl>(productList[i])) {
+                 Vinyl>(_productList[i])) {
       if (count == currentRow) {
         indexInProductList = static_cast<int>(i);
         break;
       }
       ++count;
     } else if (selectedType == "Film" && std::dynamic_pointer_cast<
-                 Movie>(productList[i])) {
+                 Movie>(_productList[i])) {
       if (count == currentRow) {
         indexInProductList = static_cast<int>(i);
         break;
@@ -927,7 +953,7 @@ void Window::onDeleteClicked() {
   }
 
   if (indexInProductList >= 0) {
-    productList.erase(productList.begin() + indexInProductList);
+    _productList.erase(_productList.begin() + indexInProductList);
     onViewClicked(); // aggiorna la tabella completamente
     QMessageBox::information(this,
                              "Successo",
@@ -940,77 +966,102 @@ void Window::onDeleteClicked() {
 }
 
 void Window::onExportClicked() {
-  if (productList.empty()) {
-    QMessageBox::warning(this, "Errore", "Non ci sono prodotti da esportare");
+  // Check if there are products to export
+  if (_productList.empty()) {
+    QMessageBox::warning(this, "Error", "There are no products to export");
     return;
   }
 
+  // TODO: Implement Logic to export different type of files
+  // File's types that can be exported
+  QStringList items;
+  items << "JSON" << "XML";
+  bool ok;
+  // Input Dialog to choose the file type
+  const QString fileType = QInputDialog::getItem(this,
+                                                 "Export products",
+                                                 "Choose the file type to export",
+                                                 items,
+                                                 0,
+                                                 false,
+                                                 &ok);
+
+  // Input Dialog to choose the file name
   QString fileName = QFileDialog::getSaveFileName(this,
-                                                  "Salva JSON",
+                                                  "Save" + fileType,
                                                   "",
-                                                  "JSON Files (*.json);;All Files (*)");
+                                                  "All Files (*)");
 
-  if (fileName.isEmpty())
+  // Check if the user provided a file name
+  if (fileName.isEmpty()) {
+    QMessageBox::warning(this, "Error", "No file name provided for export");
     return;
+  }
 
-  // Make sure it has .json extension
-  if (!fileName.endsWith(".json", Qt::CaseInsensitive))
-    fileName += ".json";
+  // Check if the file name ends with the correct extension
+  const QString extension = "." + fileType.toLower();
+  if (!fileName.endsWith(extension, Qt::CaseInsensitive))
+    fileName += extension;
 
-  JsonExportVisitor visitor;
-
-  // Visit all products
-  for (const auto &product: productList) {
-    product->accept(visitor);
+  std::unique_ptr<ExportVisitor> visitor;
+  // Export logic based on the selected file type
+  if (extension == ".json") {
+    visitor = std::make_unique<JsonExportVisitor>();
+  } else if (extension == ".xml") {
+    visitor = std::make_unique<XmlExportVisitor>();
+  } else {
+    // Default
+    QMessageBox::warning(this, "Error", "No type selected for export");
   }
 
   try {
-    visitor.exportToFile(fileName.toStdString());
+    visitor->exportToFile(fileName, _productList);
     QMessageBox::information(this,
-                             "Successo",
-                             "Prodotti esportati con successo in " + fileName);
+                             "Success",
+                             "Products exported successfully " + fileName);
   } catch (const std::exception &e) {
     QMessageBox::critical(this,
-                          "Errore",
-                          "Errore durante l'esportazione: " + QString(e.what()));
+                          "Error",
+                          "Error during export: " + QString(e.what()));
   }
 }
 
 void Window::onImportClicked() {
   QString fileName = QFileDialog::getOpenFileName(this,
-                                                  "Carica JSON",
+                                                  "Load File",
                                                   "",
-                                                  "JSON Files (*.json);;All Files (*)");
+                                                  "All Files (*)");
 
-  if (fileName.isEmpty())
+
+  if (fileName.isEmpty()) {
     return;
+  }
 
-  JsonImportVisitor importer;
+  // TODO: Find a way to handle different type of files (ask which type to import | handle the extension of the file loaded | ... )
+  std::unique_ptr<XmlImport> importer;
 
   try {
-    auto importedProducts = importer.importFromFile(fileName.toStdString());
+    auto importedProducts = importer->importFromFile(fileName);
 
     if (importedProducts.empty()) {
-      QMessageBox::warning(this, "Avviso", "Nessun prodotto trovato nel file");
+      QMessageBox::warning(this, "Error", "No products found in the file");
       return;
     }
 
     // Add imported products to the existing list
-    productList.insert(productList.end(),
-                       importedProducts.begin(),
-                       importedProducts.end());
+    _productList.insert(_productList.end(),
+                        importedProducts.begin(),
+                        importedProducts.end());
 
     QMessageBox::information(this,
-                             "Successo",
-                             QString("Importati %1 prodotti da %2")
+                             "Success",
+                             QString("Imported %1 products from: %2")
                              .arg(importedProducts.size())
                              .arg(fileName));
 
-    // Refresh the view
-    onViewClicked();
   } catch (const std::exception &e) {
     QMessageBox::critical(this,
-                          "Errore",
-                          "Errore durante l'importazione: " + QString(e.what()));
+                          "Error",
+                          "Error when trying to import: " + QString(e.what()));
   }
 }

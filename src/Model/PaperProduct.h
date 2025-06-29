@@ -5,7 +5,7 @@
 #include "Product.h"
 using std::string;
 
-class Paper_Product : public Product {
+class PaperProduct : public Product {
 private:
   string author;
   string editor;
@@ -13,10 +13,16 @@ private:
   int pages;
 
 public:
-  Paper_Product(string name, double price, QDateTime date, int totalCopies,
-                string image, string author, string editor, string genre,
+  PaperProduct(string name,
+                double price,
+                QDateTime date,
+                int totalCopies,
+                string image,
+                string author,
+                string editor,
+                string genre,
                 int pages);
-  virtual ~Paper_Product() = default;
+  virtual ~PaperProduct() = default;
   string getAuthor() const;
   string getEditor() const;
   string getGenre() const;

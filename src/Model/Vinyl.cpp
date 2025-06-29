@@ -1,13 +1,31 @@
 #include "Vinyl.h"
+#include "..\Visitor\ProductVisitor.h"
 
 
-Vinyl::Vinyl(string name, double price, QDateTime date, int totalCopies,
-             string image, string artist, string publisher, int duration,
-             string color, FormatType format,
-             SpeedType speed) : Disk(name, price, date, totalCopies, image,
-                                     artist, publisher, duration), color(color),
-                                format(format), speed(speed) {}
+Vinyl::Vinyl(string name,
+             double price,
+             QDateTime date,
+             int totalCopies,
+             string image,
+             string artist,
+             string publisher,
+             int duration,
+             string color,
+             FormatType format,
+             SpeedType speed) : Disk(name,
+                                     price,
+                                     date,
+                                     totalCopies,
+                                     image,
+                                     artist,
+                                     publisher,
+                                     duration),
+                                color(color),
+                                format(format),
+                                speed(speed) {}
 
+
+void Vinyl::accept(ProductVisitor &visitor) { visitor.visit(*this); }
 
 string Vinyl::getColor() const {
   return color;

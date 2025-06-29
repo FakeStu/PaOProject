@@ -4,6 +4,8 @@
 #include <string>
 using std::string;
 
+class ProductVisitor;
+
 class Movie : public Product {
 private:
   string director;
@@ -13,12 +15,19 @@ private:
   string genre;
 
 public:
-  Movie(string name, double price, QDateTime date, int totalCopies,
-        string image, string director, string photo_director,
-        string protagonist, int duration, string genre);
+  Movie(string name,
+        double price,
+        QDateTime date,
+        int totalCopies,
+        string image,
+        string director,
+        string photo_director,
+        string protagonist,
+        int duration,
+        string genre);
 
   virtual ~Movie() = default;
-
+  virtual void accept(ProductVisitor &visitor);
   string getDirector() const;
   string getPhotoDirector() const;
   string getProtagonist() const;

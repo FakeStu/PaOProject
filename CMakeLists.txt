@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
 project(PaOProject)
 
-set(CMAKE_PREFIX_PATH "D:/Qt/6.8.1/mingw_64")
+set(CMAKE_PREFIX_PATH "C:/Qt/6.8.1/mingw_64")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -12,13 +12,14 @@ find_package(Qt6 COMPONENTS
              Core
              Gui
              Widgets
+             Xml
              REQUIRED)
 
 add_executable(PaOProject src/main.cpp
                src/Model/Product.cpp
                src/Model/Product.h
-               src/Model/Paper_Product.cpp
-               src/Model/Paper_Product.h
+               src/Model/PaperProduct.cpp
+               src/Model/PaperProduct.h
                src/Model/Disk.cpp
                src/Model/Disk.h
                src/Model/Periodical.cpp
@@ -35,21 +36,25 @@ add_executable(PaOProject src/main.cpp
                src/Model/Vinyl.h
                src/Model/Movie.cpp
                src/Model/Movie.h
-               src/View/mainwindow.h
-               src/View/mainwindow.cpp
-               src/View/BookPage.h
-               src/View/BookPage.cpp
-               src/View/CDPage.h
-               src/View/CDPage.cpp
-               src/View/RegisterProduct.cpp
-               src/View/RegisterProduct.h
-               src/View/ProductFormPage.h
-               src/View/ProductFormPage.cpp
+               src/View/Window.h
+               src/View/Window.cpp
+               src/Visitor/ProductVisitor.h
+               src/FileManagement/Export/JSON/JsonExportVisitor.cpp
+               src/FileManagement/Export/JSON/JsonExportVisitor.h
+               src/FileManagement/Import/JSON/JsonImport.cpp
+               src/FileManagement/Import/JSON/JsonImport.h
+               src/FileManagement/Export/XML/XmlExportVisitor.cpp
+               src/FileManagement/Export/XML/XmlExportVisitor.h
+               src/Visitor/ExportVisitor.h
+               src/FileManagement/Import/Import.h
+               src/FileManagement/Import/XML/XmlImport.cpp
+               src/FileManagement/Import/XML/XmlImport.h
 )
 target_link_libraries(PaOProject
                       Qt::Core
                       Qt::Gui
                       Qt::Widgets
+                      Qt::Xml
 )
 
 if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)

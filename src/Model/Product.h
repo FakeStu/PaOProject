@@ -1,8 +1,10 @@
 #ifndef PRODUCT_H
 #define PRODUCT_H
-#include <string>
 #include <QDateTime>
+#include <string>
 using std::string;
+
+class ProductVisitor;
 
 class Product {
 private:
@@ -13,9 +15,13 @@ private:
   string image;
 
 public:
-  Product(string name, double price, QDateTime date, int totalCopies,
+  Product(string name,
+          double price,
+          QDateTime date,
+          int totalCopies,
           string image);
   virtual ~Product() = default;
+  virtual void accept(ProductVisitor &visitor) = 0;
   string getName() const;
   double getPrice() const;
   QDateTime getDate() const;

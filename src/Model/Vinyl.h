@@ -4,6 +4,8 @@
 #include <string>
 using std::string;
 
+class ProductVisitor;
+
 class Vinyl : public Disk {
 public:
   enum FormatType { Twelve, Ten, Seven };
@@ -16,12 +18,20 @@ private:
   SpeedType speed;
 
 public:
-  Vinyl(string name, double price, QDateTime date, int totalCopies,
-        string image, string artist, string publisher, int duration,
-        string color, FormatType format, SpeedType speed);
+  Vinyl(string name,
+        double price,
+        QDateTime date,
+        int totalCopies,
+        string image,
+        string artist,
+        string publisher,
+        int duration,
+        string color,
+        FormatType format,
+        SpeedType speed);
 
   virtual ~Vinyl() = default;
-
+  virtual void accept(ProductVisitor &visitor);
   string getColor() const;
   FormatType getFormat() const;
   SpeedType getSpeed() const;
@@ -31,4 +41,4 @@ public:
   string getFormatAsString() const;
   string getSpeedAsString() const;
 };
-#endif //VINYL_H
+#endif
