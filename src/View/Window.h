@@ -16,7 +16,7 @@ public:
   explicit Window(QWidget *parent = nullptr);
 
 signals:
-  void bookAdded(QString name, QString author /* ... altri parametri */);
+  void bookAdded(QString name, QString author /* ... altri parametri obbligatori*/);
   void cdAdded(QString name, QString artist /* ... */);
   void magazineAdded(QString name, QString author /* ... */);
   void comicAdded(QString name, QString author /* ... */);
@@ -29,10 +29,11 @@ private slots:
   void onDeleteClicked();
   void onExportClicked();
   void onImportClicked();
+  void onEditClicked();
+  void onUndoClicked();
+  void onConfirmEditClicked();
 
 private:
-  // TODO: Move common attributes (Book, Magazine, Comic - Vinyl, CD) together: remove duplication
-
   // Select Type Product
   QComboBox *_typeInput;
 
@@ -98,10 +99,13 @@ private:
   QWidget *_vinylWidget;
   QWidget *_movieWidget;
 
+  QPushButton *_confirmEditButton;
+  QPushButton *_undoButton;
   QPushButton *_searchButton;
   QPushButton *_confirmButton;
   QPushButton *_viewButton;
   QPushButton *_deleteButton;
+  QPushButton *_editButton;
   QPushButton *_exportButton;
   QPushButton *_importButton;
 
@@ -111,6 +115,8 @@ private:
 
   // TODO: Not sure if this is the best place for this, window handling products?
   std::vector<std::shared_ptr<Product> > _productList;
+
+  int indexInProductList = -1;
 
   void resetForm();
 };

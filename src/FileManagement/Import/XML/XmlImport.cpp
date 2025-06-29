@@ -40,9 +40,50 @@ std::shared_ptr<Book> XmlImport::createBook(const QDomElement &obj) {
                                );
 }
 
-std::shared_ptr<Magazine> XmlImport::createMagazine(const QDomElement &obj) {}
+std::shared_ptr<Magazine> XmlImport::createMagazine(const QDomElement &obj) {
+  Magazine::periodicalType periodicity = Periodical::annually;
+  QString typeStr = obj.firstChildElement("periodicity").text();
+  if (typeStr == "daily") periodicity = Periodical::daily;
+  else if (typeStr == "weekly") periodicity = Periodical::weekly;
+  else if (typeStr == "monthly") periodicity = Periodical::monthly;
+  else if (typeStr == "annually") periodicity = Periodical::annually;
 
-std::shared_ptr<Comic> XmlImport::createComic(const QDomElement &obj) {}
+  return std::make_shared<Magazine>(obj.firstChildElement("name").text().toStdString(),
+                                obj.firstChildElement("price").text().toDouble(),
+                                QDateTime::fromString(obj.firstChildElement("date").text(), Qt::ISODate),
+                                obj.firstChildElement("availableCopies").text().toInt(),
+                                obj.firstChildElement("image").text().toStdString(),
+                                obj.firstChildElement("author").text().toStdString(),
+                                obj.firstChildElement("editor").text().toStdString(),
+                                obj.firstChildElement("genre").text().toStdString(),
+                                obj.firstChildElement("pages").text().toInt(),
+                                periodicity,
+                                obj.firstChildElement("topic").text().toStdString()
+                               );
+}
+
+std::shared_ptr<Comic> XmlImport::createComic(const QDomElement &obj) {
+  Magazine::periodicalType periodicity = Periodical::annually;
+  QString typeStr = obj.firstChildElement("periodicity").text();
+  if (typeStr == "daily") periodicity = Periodical::daily;
+  else if (typeStr == "weekly") periodicity = Periodical::weekly;
+  else if (typeStr == "monthly") periodicity = Periodical::monthly;
+  else if (typeStr == "annually") periodicity = Periodical::annually;
+
+  return std::make_shared<Comic>(obj.firstChildElement("name").text().toStdString(),
+                              obj.firstChildElement("price").text().toDouble(),
+                              QDateTime::fromString(obj.firstChildElement("date").text(), Qt::ISODate),
+                              obj.firstChildElement("availableCopies").text().toInt(),
+                              obj.firstChildElement("image").text().toStdString(),
+                              obj.firstChildElement("author").text().toStdString(),
+                              obj.firstChildElement("editor").text().toStdString(),
+                              obj.firstChildElement("genre").text().toStdString(),
+                              obj.firstChildElement("pages").text().toInt(),
+                              periodicity,
+                              obj.firstChildElement("volume").text().toInt(),
+                              obj.firstChildElement("edition").text().toStdString()
+                             );
+}
 
 std::shared_ptr<CD> XmlImport::createCD(const QDomElement &obj) {
   CD::BookType bookType = CD::Red;
@@ -94,7 +135,19 @@ std::shared_ptr<Vinyl> XmlImport::createVinyl(const QDomElement &obj) {
                                 );
 }
 
-std::shared_ptr<Movie> XmlImport::createMovie(const QDomElement &obj) {}
+std::shared_ptr<Movie> XmlImport::createMovie(const QDomElement &obj) {
+  return std::make_shared<Movie>(obj.firstChildElement("name").text().toStdString(),
+                               obj.firstChildElement("price").text().toDouble(),
+                               QDateTime::fromString(obj.firstChildElement("date").text(), Qt::ISODate),
+                               obj.firstChildElement("availableCopies").text().toInt(),
+                               obj.firstChildElement("image").text().toStdString(),
+                               obj.firstChildElement("director").text().toStdString(),
+                               obj.firstChildElement("photo_director").text().toStdString(),
+                               obj.firstChildElement("protagonist").text().toStdString(),
+                               obj.firstChildElement("duration").text().toInt(),
+                               obj.firstChildElement("wd").text().toStdString()
+                              );
+}
 
 std::vector<std::shared_ptr<Product> > XmlImport::importFromFile(QString filename) {
   // Vector of products to return
