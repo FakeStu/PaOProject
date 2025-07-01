@@ -50,15 +50,15 @@ SOURCES += src/main.cpp \
            src/FileManagement/Export/XML/XmlExportVisitor.cpp \
            src/FileManagement/Import/JSON/JsonImport.cpp \
            src/FileManagement/Import/XML/XmlImport.cpp \
-           src/FileManagement/Import/JSON/JsonBookFactory.cpp \
-           src/FileManagement/Import/JSON/JsonMagazineFactory.cpp \
-           src/FileManagement/Import/JSON/JsonComicFactory.cpp \
-           src/FileManagement/Import/JSON/JsonCDFactory.cpp \
-           src/FileManagement/Import/JSON/JsonVinylFactory.cpp \
-           src/FileManagement/Import/JSON/JsonMovieFactory.cpp \
-           src/FileManagement/Import/XML/XmlBookFactory.cpp \
-           src/FileManagement/Import/XML/XmlMagazineFactory.cpp \
-           src/FileManagement/Import/XML/XmlComicFactory.cpp \
-           src/FileManagement/Import/XML/XmlCDFactory.cpp \
-           src/FileManagement/Import/XML/XmlVinylFactory.cpp \
-           src/FileManagement/Import/XML/XmlMovieFactory.cpp
+           src/Factory/JSON/Factories/JsonBookFactory.cpp \
+           src/Factory/JSON/Factories/JsonMagazineFactory.cpp \
+           src/Factory/JSON/Factories/JsonComicFactory.cpp \
+           src/Factory/JSON/Factories/JsonCDFactory.cpp \
+           src/Factory/JSON/Factories/JsonVinylFactory.cpp \
+           src/Factory/JSON/Factories/JsonMovieFactory.cpp \
+           src/Factory/XML/Factories/XmlBookFactory.cpp \
+           src/Factory/XML/Factories/XmlMagazineFactory.cpp \
+           src/Factory/XML/Factories/XmlComicFactory.cpp \
+           src/Factory/XML/Factories/XmlCDFactory.cpp \
+           src/Factory/XML/Factories/XmlVinylFactory.cpp \
+           src/Factory/XML/Factories/XmlMovieFactory.cpp
