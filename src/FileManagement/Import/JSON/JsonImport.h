@@ -2,6 +2,7 @@
 #define JSONIMPORTVISITOR_H
 
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
 #include "../Import.h"

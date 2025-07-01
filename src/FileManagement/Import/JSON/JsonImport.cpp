@@ -1,17 +1,9 @@
 #include "JsonImport.h"
-
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox>
-
-#include "../../../Model/Book.h"
-#include "../../../Model/CD.h"
-#include "../../../Model/Comic.h"
-#include "../../../Model/Magazine.h"
-#include "../../../Model/Movie.h"
-#include "../../../Model/Vinyl.h"
 
 std::shared_ptr<Product> JsonImport::createFromJson(const QJsonObject &obj, const QString &type) {
   if (obj.isEmpty())
