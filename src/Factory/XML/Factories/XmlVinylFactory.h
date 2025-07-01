@@ -1,0 +1,13 @@
+#ifndef XMLVINYLFACTORY_H
+#define XMLVINYLFACTORY_H
+
+#include "../XmlProductFactory.h"
+
+class XmlVinylFactory : public XmlProductFactory {
+public:
+  std::shared_ptr<Product> createProduct(const QDomElement &element);
+};
+
+
+
+#endif

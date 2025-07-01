@@ -1,0 +1,40 @@
+# Ignore build output
+cmake-build-debug/
+
+# Ignore all .idea files except code style and essential project files
+.idea/*
+!.idea/codeStyles/
+!.idea/codeStyles/*.xml
+!.idea/misc.xml
+!.idea/modules.xml
+!.idea/workspace.xml
+!.idea/.gitignore
+
+# Ignore user-specific and workspace files
+.idea/shelf/
+.idea/httpRequests/
+.idea/dataSources/
+.idea/dataSources.local.xml
+
+# Ignore OS and editor files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Ignore Qt Creator files
+*.pro.user
+*.qbs.user
+*.user
+*.autosave
+
+# Ignore CMake generated files
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Ignore executable
+PaOProject.exe
+
+#Ingore CMakeLists.txt for development purposes
+CMakeLists.txt

@@ -1,0 +1,70 @@
+{
+    "products": {
+        "cd": [
+            {
+                "artist": "",
+                "availableCopies": 0,
+                "bookType": "Red",
+                "date": "2025-06-30T00:00:00Z",
+                "diameter": 0,
+                "duration": 0,
+                "image": "",
+                "name": "prova1",
+                "price": 0,
+                "publisher": ""
+            },
+            {
+                "artist": "",
+                "availableCopies": 0,
+                "bookType": "Red",
+                "date": "2025-06-30T00:00:00Z",
+                "diameter": 0,
+                "duration": 0,
+                "image": "",
+                "name": "prova2",
+                "price": 0,
+                "publisher": ""
+            },
+            {
+                "artist": "",
+                "availableCopies": 0,
+                "bookType": "Red",
+                "date": "2025-06-30T00:00:00Z",
+                "diameter": 0,
+                "duration": 0,
+                "image": "",
+                "name": "prova3",
+                "price": 0,
+                "publisher": ""
+            }
+        ],
+        "vinyl": [
+            {
+                "artist": "",
+                "availableCopies": 0,
+                "color": "",
+                "date": "2025-06-30T00:00:00Z",
+                "duration": 0,
+                "format": "Twelve",
+                "image": "",
+                "name": "prova4",
+                "price": 0,
+                "publisher": "",
+                "speed": "ThirtyThree"
+            },
+            {
+                "artist": "",
+                "availableCopies": 0,
+                "color": "",
+                "date": "2025-06-30T00:00:00Z",
+                "duration": 0,
+                "format": "Twelve",
+                "image": "",
+                "name": "prova5",
+                "price": 0,
+                "publisher": "",
+                "speed": "ThirtyThree"
+            }
+        ]
+    }
+}
