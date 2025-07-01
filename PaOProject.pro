@@ -49,4 +49,16 @@ SOURCES += src/main.cpp \
            src/FileManagement/Export/JSON/JsonExportVisitor.cpp \
            src/FileManagement/Export/XML/XmlExportVisitor.cpp \
            src/FileManagement/Import/JSON/JsonImport.cpp \
-           src/FileManagement/Import/XML/XmlImport.cpp
+           src/FileManagement/Import/XML/XmlImport.cpp \
+           src/FileManagement/Import/JSON/JsonBookFactory.cpp \
+           src/FileManagement/Import/JSON/JsonMagazineFactory.cpp \
+           src/FileManagement/Import/JSON/JsonComicFactory.cpp \
+           src/FileManagement/Import/JSON/JsonCDFactory.cpp \
+           src/FileManagement/Import/JSON/JsonVinylFactory.cpp \
+           src/FileManagement/Import/JSON/JsonMovieFactory.cpp \
+           src/FileManagement/Import/XML/XmlBookFactory.cpp \
+           src/FileManagement/Import/XML/XmlMagazineFactory.cpp \
+           src/FileManagement/Import/XML/XmlComicFactory.cpp \
+           src/FileManagement/Import/XML/XmlCDFactory.cpp \
+           src/FileManagement/Import/XML/XmlVinylFactory.cpp \
+           src/FileManagement/Import/XML/XmlMovieFactory.cpp
