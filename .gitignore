@@ -1,14 +1,8 @@
 # Ignore build output
 cmake-build-debug/
 
-# Ignore all .idea files except code style and essential project files
-.idea/*
-!.idea/codeStyles/
-!.idea/codeStyles/*.xml
-!.idea/misc.xml
-!.idea/modules.xml
-!.idea/workspace.xml
-!.idea/.gitignore
+# Ignore all .idea files
+.idea/
 
 # Ignore user-specific and workspace files
 .idea/shelf/
@@ -35,6 +29,3 @@ Makefile
 
 # Ignore executable
 PaOProject.exe
-
-#Ingore CMakeLists.txt for development purposes
-CMakeLists.txt
